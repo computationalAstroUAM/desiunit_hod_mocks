@@ -1,5 +1,9 @@
 #! /bin/bash
+<<<<<<< HEAD
 #PBS -l walltime=48:00:00
+=======
+#PBS -l walltime=24:00:00
+>>>>>>> 9a84896b7d0909314be7c883960d40bdd19d95c8
 #PBS -l nodes=1
 
 logpath=/mnt/lustre/$(whoami)/Junk/
@@ -7,10 +11,15 @@ logpath=/mnt/lustre/$(whoami)/Junk/
 indir='/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/'
 outdir='/mnt/astro3/sftp/ebossguest/downloads/ascii/'
 
+<<<<<<< HEAD
 #reds=('OuterRim_STEP203_z1.433' 'OuterRim_STEP266_z0.865' 'OuterRim_STEP300_z0.656')
 reds=('OuterRim_STEP300_z0.656')
 #whats=('fofproperties' 'particles')
 whats=('particles')
+=======
+reds=('OuterRim_STEP203_z1.433' 'OuterRim_STEP266_z0.865' 'OuterRim_STEP203_z1.433')
+whats=('fofproperties' 'particles')
+>>>>>>> 9a84896b7d0909314be7c883960d40bdd19d95c8
 
 for red in ${reds[@]} ; do
     for what2tar in ${whats[@]} ; do
