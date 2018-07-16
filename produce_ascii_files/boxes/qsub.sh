@@ -6,7 +6,7 @@
 code2run=subvol2ascii.py
 lcut=1000
 
-steps=(266) #OuterRim: (203 266 300)
+steps=266 #OuterRim: (203 266 300)
 
 logpath=/mnt/lustre/$(whoami)/Junk/$code2run
 
