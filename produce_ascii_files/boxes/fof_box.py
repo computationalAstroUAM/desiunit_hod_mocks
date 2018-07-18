@@ -30,6 +30,8 @@ else:
     sys.exit('3 arguments to be passed: ix, iy, iz')
 
 ############################# 
+outfile = root+str(xbox)+str(ybox)+str(zbox)+'.txt' 
+
 # Minimum values
 allx0, ally0, allz0 = [np.zeros(ncell) for i in range(3)]
 for i in range(3):
@@ -40,7 +42,7 @@ for i in range(3):
 x0 = allx0[xbox] ; xL = x0 + cell
 y0 = ally0[ybox] ; yL = y0 + cell
 z0 = allz0[zbox] ; zL = z0 + cell
-print type(x0), type(xL)
+
 ## Read each galaxy and write it in the correct file
 nroot = halodir+'HaloCatalog/STEP'+str(istep)  
 files = glob.glob(nroot+'/*'+str(istep)+'*.fofproperties#*')
@@ -58,35 +60,35 @@ for infile in files:
 
     # Output
     ind = np.where((mass>0.) & \
-                       (xc>x0) & (xc<xL) & \
-                       (yc>y0) & (yc<yL) & \
-                       (zc>z0) & (zc<zL) )
+                       (xc>=x0) & (xc<xL) & \
+                       (yc>=y0) & (yc<yL) & \
+                       (zc>=z0) & (zc<zL) )
 
     if (np.shape(ind)[1] > 0):
         lmass = np.log10(mass[ind])
-        print lmass ; sys.exit()
+
         # Shift values so all the boxes start at (0,0,0)
-        xs = x[ind] - x0
-        ys = y[ind] - y0
-        zs = z[ind] - z0
+        xs = xc[ind] - x0
+        ys = yc[ind] - y0
+        zs = zc[ind] - z0
 
         tofile = zip(xs,ys,zs,\
                          vx[ind],vy[ind],vz[ind],\
                          lmass,tag[ind])
 
-        if os.path.exists(filename):
+        if os.path.exists(outfile):
             with open(outfile, 'a') as outf:
-                outf.write(tofile+' \n') #; print outfile
+                np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %i'))      
                 outf.closed
         else:
             with open(outfile, 'w') as outf:
-                outf.write(tofile+' \n') #; print outfile
+                np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %i'))      
                 outf.closed
 
     # Testing -------------
-    ifile += 1
-    if ifile>2:
-        break
+    #ifile += 1
+    #if ifile>2:
+    #    break
     #-------------------------
 
 print ('Output in ',root)

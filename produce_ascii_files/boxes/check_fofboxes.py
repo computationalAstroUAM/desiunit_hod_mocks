@@ -18,34 +18,56 @@ lbox = 3000.
 cell = lbox/3. 
 ncell = int(lbox/cell) 
 
-# Remove files if they already exist
+ifile = 0
 for ix in range(ncell):
     for iy in range(ncell):
         for iz in range(ncell):
             filename = root+str(ix)+str(iy)+str(iz)+'.txt'
             if (not os.path.exists(filename)):
                 print('ERROR: file missing ',filename)
-            else: # Try to read
-                xc,yc,zc,vx,vy,vz,lmass,tag = \
-                    np.loadtxt(filename, unpack = True)
+            else: 
+                # Count the lines in the file
+                ff = open(filename) ; num = 0
+                for line in ff:
+                    num += 1
+                ff.close()
+                print(num,' lines in ',filename)
 
-                num = len(xc)
-                if (num<1):
-                    print('ERROR: empty file ',filename)
-                else:
-                    # Downsample to plot
-                    idx = np.arange(num) ; random.shuffle(idx)
-                    val = num/100
+                # Downsample to plot
+                sampling_rate = 0.001
+                if num>10000000:
+                    sampling_rate = 0.0001
 
-                    # Plot
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111,projection='3d')
-                    xtit ='x (Mpc/h)' ; ytit ='y (Mpc/h)'; ztit ='z (Mpc/h)'
-                    ax.set_xlabel(xtit) ; ax.set_ylabel(ytit) ; ax.set_zlabel(ztit)
-                    ax.scatter(xs=xc[idx[:val]],ys=yc[idx[:val]],zs=zc[idx[:val]])
+                xp, yp, zp = [np.empty((0,1), float) for i in range(3)]
+                ff = open(filename) 
+                for line in ff:
+                    xx = float(line.split()[0])
+                    yy = float(line.split()[1])
+                    zz = float(line.split()[2])
 
-                    plotfile = outdir+'plots/OuterRim_STEP'+str(istep)+\
-                        '_'+str(ix)+str(iy)+str(iz)+'.pdf'
-                    fig.savefig(plotfile)
-                    print 'Test plot: ',plotfile
+                    ran = np.random.random_sample()
+                    if (ran < sampling_rate):
+                        xp = np.append(xp, xx)
+                        yp = np.append(yp, yy)
+                        zp = np.append(zp, zz)
+                ff.close()                                
 
+                # Plot
+                print('Plot ',len(xp),' points')
+                fig = plt.figure() 
+                ax = fig.add_subplot(111,projection='3d')
+                xtit ='x (Mpc/h)' ; ytit ='y (Mpc/h)'; ztit ='z (Mpc/h)'
+
+                ax.set_xlabel(xtit) ; ax.set_ylabel(ytit) ; ax.set_zlabel(ztit)
+                ax.scatter(xs=xp,ys=yp,zs=zp)
+                
+                plotfile = outdir+'plots/OuterRim_STEP'+str(istep)+\
+                    '_'+str(ix)+str(iy)+str(iz)+'.pdf'
+                fig.savefig(plotfile)
+                print 'Test plot: ',plotfile
+
+                # Testing -------------
+                ifile += 1
+                if ifile>2:
+                    break
+                #-------------------------
