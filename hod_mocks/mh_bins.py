@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg') 
 from matplotlib import pyplot as plt
 
-nmin = 250000
+nmin = 50 #250000
 
 # Directory with the OuterRim simulation haloes
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
@@ -19,18 +19,36 @@ if (not os.path.exists(filename)):
     print('ERROR: file missing ',filename) ; sys.exit()
 
 # Initial histogram
-mmin = 8. ; mmax = 18. ; dmi = 0.05
+mmin = 9. ; mmax = 18. ; dmi = 0.05
 mbins = np.arange(mmin,mmax,dmi)
 
 mlow, mhigh, mmid = [np.empty((0,1), float) for i in range(3)]
+nhini = 0
 
 # Find number of galaxies per initial bin
-ff = open(filename) ; nh = 0
+ff = open(filename) ; iline = 0
 for line in ff:
     mm = float(line.split()[6])
     if (mm>0.):
         H, bins_edges = np.histogram(mm,bins=np.append(mbins,mmax))
-        nh = nh + H
+        nhini = nhini + H
 
-print nh
+        # Testing -------------
+        iline += 1
+        if iline>100:
+            break
+        #-------------------------
 
+mlow = np.append(mlow, mmin)
+
+ii = -1
+for jj in range(len(mbins)):
+    nn = 0  
+    while nn<nmin:
+        ii += 1
+        nn = nn + nhini[ii]
+    print ii,nhini[ii],nn,nmin
+    mhigh = np.append(mhigh, mbins[ii])
+    mlow = np.append(mlow, mbins[ii])
+
+    if jj<
