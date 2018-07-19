@@ -31,7 +31,7 @@ for ix in range(ncell):
                 for line in ff:
                     num += 1
                 ff.close()
-                print(num,' lines in ',filename)
+                print(ifile,num,' lines in ',filename)
 
                 # Downsample to plot
                 sampling_rate = 0.001
@@ -67,7 +67,7 @@ for ix in range(ncell):
                 print 'Test plot: ',plotfile
 
                 # Testing -------------
-                ifile += 1
-                if ifile>2:
-                    break
+                #ifile += 1
+                #if ifile>1:
+                #    sys.exit()
                 #-------------------------
