@@ -51,9 +51,9 @@ for infile in files:
     # Read the file
     tag = gio.gio_read(infile,"fof_halo_tag")
     mass = gio.gio_read(infile,"fof_halo_mass")
-    xc = gio.gio_read(infile,"fof_halo_center_x")
-    yc = gio.gio_read(infile,"fof_halo_center_y")
-    zc = gio.gio_read(infile,"fof_halo_center_z")
+    xc = gio.gio_read(infile,"fof_halo_mean_x")
+    yc = gio.gio_read(infile,"fof_halo_mean_y")
+    zc = gio.gio_read(infile,"fof_halo_mean_z")
     vx = gio.gio_read(infile,"fof_halo_mean_vx")
     vy = gio.gio_read(infile,"fof_halo_mean_vy")
     vz = gio.gio_read(infile,"fof_halo_mean_vz")

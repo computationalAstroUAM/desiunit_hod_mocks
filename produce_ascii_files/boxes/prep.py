@@ -26,5 +26,5 @@ for ix in range(ncell):
 # Create a README file with the header for all the files
 filename = outdir+'README.md' ; print filename
 with open(filename, 'w') as outf:
-    outf.write('# fof_halo_center_x (Mpc/h), fof_halo_center_y (Mpc/h), fof_halo_center_z (Mpc/h), fof_halo_mean_vx (km/s), fof_halo_mean_vy (km/s), fof_halo_mean_vz (km/s), log10(fof_halo_mass /Msun/h), fof_halo_tag \n')
+    outf.write('# fof_halo_mean_x (Mpc/h), fof_halo_mean_y (Mpc/h), fof_halo_mean_z (Mpc/h), fof_halo_mean_vx (km/s), fof_halo_mean_vy (km/s), fof_halo_mean_vz (km/s), log10(fof_halo_mass /Msun/h), fof_halo_tag \n')
     outf.closed
