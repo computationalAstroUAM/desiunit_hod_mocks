@@ -7,10 +7,41 @@ from matplotlib import pyplot as plt
 from distinct_colours import get_distinct 
 cols = get_distinct(10) 
 
+def percentiles(val,data,weights=None):
+    if (val <0 or val >1):
+        sys.exit('STOP percentiles: 0<val<1')
+
+    if (weights is None):
+        ws = np.zeros(shape=(len(data))) ; ws.fill(1.)
+    else:
+        ws = weights
+
+    data = np.array(data) ; ws = np.array(ws)
+    ind_sorted = np.argsort(data)  # Median calculation from wquantiles
+    sorted_data = data[ind_sorted] ; sorted_weights = ws[ind_sorted]
+    
+    num = np.cumsum(sorted_weights) - 0.5*sorted_weights 
+    den = np.sum(sorted_weights) 
+    if (den!=0): 
+        pn = num/den   
+        percentiles = np.interp(val, pn, sorted_data)  
+    else:
+        sys.exit('STOP percentiles: problem with weights')
+
+    return percentiles
+
 # Bins
-edges = np.array([10.3, 10.7, 10.8, 10.9, 11., 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 12., 12.1, 12.2, 12.3, 12.4, 12.5, 12.7, 13., 13.5, 14., 15., 16., 17.])
-mhist = np.array([10.5, 10.75, 10.85, 10.95, 11.05, 11.15, 11.25, 11.35, 11.45, 11.55, 11.65, 11.75, 11.85, 11.95, 12.05, 12.15, 12.25, 12.35, 12.45, 12.6, 12.85, 13.25, 13.75, 14.5, 15.5, 16.5])
+edges = np.array([10.58, 10.7, 10.8, 10.9, 11., 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 12., 12.1, 12.2, 12.3, 12.4, 12.5, 12.7, 13., 13.5, 14., 16.])
+mhist = np.array([10.64, 10.75, 10.85, 10.95, 11.05, 11.15, 11.25, 11.35, 11.45, 11.55, 11.65, 11.75, 11.85, 11.95, 12.05, 12.15, 12.25, 12.35, 12.45, 12.6, 12.85, 13.25, 13.75, 15.])
 dm = edges[1:]-edges[:-1]
+
+# Bins for the calculation of the median mass in each bin
+mhmed = np.zeros_like(mhist)
+nbmed = 100
+xbmed = np.zeros((len(mhist),nbmed))
+for i,ed in enumerate(edges[:-1]):
+    xbmed[i,:] = np.linspace(ed, edges[i+1], num=nbmed)
+ybmed = np.zeros((len(mhist),nbmed-1))
 
 ###################
 # Directory with the OuterRim simulation haloes
@@ -71,8 +102,14 @@ for iz,istep in enumerate([266]):
         # FOF mass (Msun/h)
         in_mh = gio.gio_read(infile, "fof_halo_mass")
         ind = np.where(in_mh >0.) ; mh = np.log10(in_mh[ind])
-        H, bins_edges = np.histogram(count,bins=edges)
+        H, bins_edges = np.histogram(mh,bins=edges)
         yh = yh + H
+
+        # Build up histograms for the calculation of the median
+        for i,ed in enumerate(edges[:-1]):
+            edmed = xbmed[i,:]
+            H, bins_edges = np.histogram(mh,bins=edmed)
+            ybmed[i,:] = ybmed[i,:] + H
 
         # Testing----------------------
         #if inf>1:
@@ -82,12 +119,18 @@ for iz,istep in enumerate([266]):
     ycount = ycount/dm/(lbox**3)
     yh = yh/dm/(lbox**3)
 
+    # Calculate the median mass of each HMF bin
+    for i,ed in enumerate(edges[:-1]):
+        x = (xbmed[i,:-1]+xbmed[i,1:])/2.
+        y = ybmed[i,:]
+        mhmed[i] = percentiles(0.5,x,weights=y)
+
     # Write Halo Mass function to a file
-    tofile = zip(edges[:-1],edges[1:],mhist,ycount)
+    tofile = zip(edges[:-1],edges[1:], ycount, mhmed, mhist, dm)
     outfile = halodir+'hmf.txt'
     with open(outfile, 'w') as outf:
-        outf.write('# log10Mmin_bin log10Mmax_bin log10Mmean_bin Nhalos/dm/vol \n')
-        np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %10.5f %6.4e'))      
+        outf.write('# log10Mmin_bin log10Mmax_bin Nhalos/dm/vol log10Mmedian_bin log10Mmean_bin dM  \n')
+        np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %6.4e %10.5f %10.5f %10.5f'))      
     outf.closed  
 
     # Plot for all redshifts

@@ -29,7 +29,7 @@ Acen = np.vectorize(CalcAcen)
 
 #Metrics that we want to minimisize (or "error")
 def delta_sq(b_mod, b_targ):
-    delt =(b_mod**2 - b_targ**2)/b_targ**2 )**2
+    delt =((b_mod**2 - b_targ**2)/b_targ**2 )**2
     return delt
 
 #############################                                      
@@ -52,50 +52,44 @@ print "## Target ##"
 print "b=",b_targ, " n=",n_targ
 print "  "
 
-#Volume which was used to computed N(Mh)  (=n(Mh) * V)  #VGP:???
-vol=500**3
-
 #------------------------
-fix_fsat = True   ; fsat0 = 0.2
+fix_fsat = False   ; fsat0 = 0.2
 fix_mu =   False  ; mu0 = 12.
-doplot =   False
+doplot =   True
 #-----------------------
 
 # Fixed parameters 
 sig = 0.12
 alpha = 0.8
 
-# OuterRim file
+# Read HMF (number of haloes per dlogMh per volume)
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
-outdir = halodir+'ascii/OuterRim_STEP266_z0.865/subvols27/'
-root = outdir+'OuterRim_STEP'+str(istep)+'_fofproperties_'
-file = root+str(xbox)+str(ybox)+str(zbox)+'.txt' 
+mfile = halodir+'hmf.txt'
+mlow, mhigh, hmf, mhmean, mhmed = \
+    np.loadtxt(mfile, usecols= (0,1,2,3,4), unpack=True )
+mhist = mhmed
 
-# Read Mh
-data = np.genfromtxt(file)
-logMh = data[:,6] #Halo masses
-print logMh ; sys.exit()
-
-## Read HMF ------ to be updated to reading the new tables when ready 
-#Mh, N(Mh), b(Mh)
-File = '/users/savila/ELGs_eBOSS/CUTE_box/plots/Halos/Mh_n_b_Halostest_halfres.txt'
-array = np.loadtxt(File)
-hmf = array[:, 1]
-bh = array[:, 2]
-mhist = array[:, 0]
+# Read bias ------ to be updated to reading the new tables when ready 
+bfile = '/users/savila/ELGs_eBOSS/CUTE_box/plots/Halos/Mh_n_b_Halostest_halfres.txt'
+#bh = np.genfromtxt(bfile, usecols=(2))
+mhist, hmf, bh = np.genfromtxt(bfile, usecols=(0, 1, 2), unpack=True)
+hmf = hmf/pow(500.,3)
 #-------------------------------------------------------
 
 #Grid for mu and fsat
 if fix_fsat:
     fsat_arr = np.array([fsat0])  
 else:
-    fsat_arr = np.array([20.,0.2]) #np.arange(0.002, 0.3 ,0.005) 
+    fsat_arr = np.arange(0.002, 0.3 ,0.005) 
 
 if fix_mu:
     mu_arr = np.array([mu0])
 else:
     mu_arr = np.arange(11.0,15.0,0.01)
-print type(fsat_arr),type(mu_arr)
+
+print ('Halo masses:',mhist)
+print ('fsat values:',fsat_arr)
+print ('mu values:',mu_arr)
 
 # Set grid arrays
 bgal= np.zeros((len(fsat_arr),len(mu_arr)))
@@ -110,70 +104,70 @@ for ii,fsat in enumerate(fsat_arr):
         logM0 = mu - 0.1
         logM1 = mu + 0.3
 
-        # Calculate number of centrals
+        # Calculate Ac
+        ncen = n_targ*(1.-fsat)
+
         Integrand = hmf*gcent(mhist, mu, sig)
-        Ic = integrate.simps(Integrand)
-        ncen = n_targ*(1.-fsat)*Ic
+        Ic = integrate.simps(Integrand,mhist)
         Ac[ii,jj] = ncen/Ic
+
         if (ncen<=0.):
             print ('ERROR no centrals for fsat,mu=',fsat,mu)
             bgal[ii,jj] = 999. ; delt[ii,jj] =  999.
             break
 
-        # Calculate number of satellites
-        As[ii,jj] = 0. ; nsat = 0.
+        # Calculate As
+        nsat = n_targ*fsat
+
+        As[ii,jj] = 0. 
         if (fsat>0.):
             Integrand = hmf*gsat(mhist, logM0, logM1, alpha)
-            Is = integrate.simps(Integrand)
-            nsat = n_targ*fsat*Is
-            As[ii,jj] = nsat/Is
+            Is = integrate.simps(Integrand,mhist)
+            if (Is>0.):
+                As[ii,jj] = nsat/Is
 
         # Calculate the galaxy bias
         Integrand = bh*hmf*gcent(mhist, mu, sig)
-        Ic = integrate.simps(Integrand)
-        bcen = Ac[ii,jj]*Ic
+        Ic = integrate.simps(Integrand,mhist)
+        bcen = Ac[ii,jj]*Ic/n_targ
 
         bsat = 0.
         if (fsat>0.):
             Integrand = bh*hmf*gsat(mhist, logM0, logM1, alpha)
-            Is = integrate.simps(Integrand)
-            bsat = As[ii,jj]*Is
+            Is = integrate.simps(Integrand,mhist)
+            bsat = As[ii,jj]*Is/n_targ
 
-        bgal[ii,jj] = (bcen+bsat)/(nsat+ncen)
-
+        bgal[ii,jj] = bcen+bsat
+        
         #Compute the "error" wrt the target quantities
         delt[ii,jj] = delta_sq(bgal[ii,jj], b_targ)
 
 #Find the parameters that give us the minimum "error"
-print "delt=",delt
-m,n= np.where(delt==np.min(delt))
+print "delt=",delt 
+print("Input b, n=",b_targ, n_targ)
+print("Fix params: alpha= ",alpha," sigma= ",sig)
+m,n= np.where(delt==np.nanmin(delt))
 print('Mimimum:')
 k=m
-l=n
-print("Input b, n=",b_targ, n_targ
-print("Delta=",delt[k,l][0]," b=",bgal[k,l][0],\
-          "fsat=",fsat_arr[k][0],"mu=",mu_arr[l][0])
-print("Fix params: alpha= ",alpha," sigma= ",sig)
+l=n 
+print("Delta=",delt[k,l][0])
+print(" b=",bgal[k,l][0],"fsat=",fsat_arr[k][0],"mu=",mu_arr[l][0])
 print("Derived params: Ac= ",Ac[k,l][0]," As= ",As[k,l][0])
 print("Re-scaled params: logM0=",mu_arr[l][0] - 0.1," logM1=",mu_arr[l][0] + 0.3)
 
 if doplot:
-    plotname = outdir+'/plots/bestfit_gauss.pdf'
+    plotname = halodir+'/plots/bestfit_gauss.pdf'
     fig = plt.figure(figsize = (8., 9.))
     xtit = '${\\rm logM_{h}}$' ; ytit = '${\\rm logN}$'
     plt.xlabel(xtit) ; plt.ylabel(ytit)
     plt.ylim([-3, 3])
 
-    Integrand = hmf*gcent(mhist, mu_arr[l][0], sig)
-    Ic = integrate.simps(Integrand)
-    ncen = n_targ*(1-fsat_arr[k][0])*Ic
-    plt.plot(mhist, np.log10(ncen), label='${\\rm N_{cen}}$') 
+    ncen_mh = Ac[k,l][0]*gcent(mhist, mu_arr[l][0], sig)
+    plt.plot(mhist, np.log10(ncen_mh), label='${\\rm N_{cen}}$') 
     
     if (fsat_arr[k][0]>0.):
-        Integrand = hmf*gsat(mhist, mu_arr[l][0] - 0.1, mu_arr[l][0] + 0.3, alpha)
-        Is = integrate.simps(Integrand)
-        nsat = n_targ*fsat_arr[k][0]*Is
-        plt.plot(mhist, np.log10(nsat), label='${\\rm N_{sat}}$')
+        nsat_mh = As[k,l][0]*gsat(mhist, mu_arr[l][0] - 0.1, mu_arr[l][0] + 0.3, alpha)
+        plt.plot(mhist, np.log10(nsat_mh), label='${\\rm N_{sat}}$')
         
     leg = plt.legend(loc=1)
     leg.draw_frame(False)
