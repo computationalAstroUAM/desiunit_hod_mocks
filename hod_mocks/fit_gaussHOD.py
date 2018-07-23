@@ -36,31 +36,21 @@ def delta_sq(b_mod, b_targ):
 #                                                                  
 #  Input ARGUMENTS                                                 
 #                                                                  
-narg = len(sys.argv)                                               
-if(narg == 4):
-    xbox = int(sys.argv[1])
-    ybox = int(sys.argv[2])
-    zbox = int(sys.argv[3])
-else:                                                              
-    sys.exit('3 arguments to be passed: ix, iy, iz')
-############################# 
-
 n_targ=0.000246356087788
 b_targ = 1.22
-
-print "## Target ##"
-print "b=",b_targ, " n=",n_targ
-print "  "
-
-#------------------------
-fix_fsat = False   ; fsat0 = 0.2
-fix_mu =   False  ; mu0 = 12.
-doplot =   True
-#-----------------------
 
 # Fixed parameters 
 sig = 0.12
 alpha = 0.8
+############################# 
+fix_fsat = False   ; fsat0 = 0.2
+fix_mu =   False  ; mu0 = 12.
+doplot =   True
+############################# 
+
+print "## Target ##"
+print "b=",b_targ, " n=",n_targ
+print "  "
 
 # Read HMF (number of haloes per dlogMh per volume)
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
@@ -143,7 +133,9 @@ for ii,fsat in enumerate(fsat_arr):
         delt[ii,jj] = delta_sq(bgal[ii,jj], b_targ)
 
 #Find the parameters that give us the minimum "error"
+print("  ")
 print "delt=",delt 
+print("  ")
 print("Input b, n=",b_targ, n_targ)
 print("Fix params: alpha= ",alpha," sigma= ",sig)
 m,n= np.where(delt==np.nanmin(delt))
@@ -154,6 +146,15 @@ print("Delta=",delt[k,l][0])
 print(" b=",bgal[k,l][0],"fsat=",fsat_arr[k][0],"mu=",mu_arr[l][0])
 print("Derived params: Ac= ",Ac[k,l][0]," As= ",As[k,l][0])
 print("Re-scaled params: logM0=",mu_arr[l][0] - 0.1," logM1=",mu_arr[l][0] + 0.3)
+print("  ")
+Integrand = hmf*gcent(mhist, mu_arr[l][0], sig)
+Ic = integrate.simps(Integrand,mhist)
+ncen = Ac[k,l][0]*Ic
+Integrand = hmf*gsat(mhist, mu_arr[l][0] - 0.1, mu_arr[l][0] + 0.3, alpha)
+Is = integrate.simps(Integrand,mhist)
+nsat = As[k,l][0]*Is
+print("ngal=",ncen+nsat," ngal/n_targ=",(ncen+nsat)/n_targ) 
+print("  ")
 
 if doplot:
     plotname = halodir+'/plots/bestfit_gauss.pdf'
