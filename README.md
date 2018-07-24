@@ -75,3 +75,32 @@ The information in the files "\*particles\*" under each "STEP#" directory is as 
 This repository contains code relevant for the construction of mocks catalogues using the OuterRim simulation.
 
 * **produce_ascii_files**: Contains programs to read the OuterRim simulation files in the genericIO format (both halo and particle information) and produce ASCII files. In order to use this code, the python module generio is required. This can be get following [this directions](http://trac.alcf.anl.gov/projects/genericio).
+
+* **hmf**: Contains code to generate the halo mass function from the OuterRim simulation.
+
+* **hod_mocks**: Contains programs to find the best HOD values and to populate the simulation accordingly. Code from Martin White can be found here:
+
+https://github.com/martinjameswhite/MockingDESI.git
+
+* **compute_nz**
+
+* **RSD_in_BOX**
+
+* **tools**: Contains programs that are useful in all projects, such an example on reading 
+in python a GenericIO file.
+
+------------------------------------------
+For coding in Pyhton, add the following:
+
+-----------------  .cshrc
+######eBOSS
+set EBOSS = /mnt/lustre/eboss
+
+alias CUTE '${EBOSS}/CUTE/CUTE'
+alias CUTE_box '${EBOSS}/CUTE_box/CUTE_box'
+
+######Python
+module add  apps/anaconda/2.4.0
+setenv PYTHONPATH ${EBOSS}/genericio/python
+------------------
+

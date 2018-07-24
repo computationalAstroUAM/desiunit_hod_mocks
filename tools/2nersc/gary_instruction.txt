@@ -1,0 +1,82 @@
+The globus machine is globusconnect-app-01.iso.port.ac.uk (148.197.254.16) .
+
+I have created two accounts for you the first is "ebossadmin" with password "$1cg60ss" .
+
+You can ssh to the machine to create directories etc :-
+
+login5:~> ssh ebossadmin@globusconnect-app-01.iso.port.ac.uk
+ebossadmin@globusconnect-app-01.iso.port.ac.uk's password: 
+Last login: Sat Jan  7 17:32:22 2017
+-bash-4.2$
+
+Your home directory on the machine is :-
+
+-bash-4.2$ pwd
+/data/eboss
+
+
+You can transfer data to and from this machie using :-
+
+login5:~>  rsync -ravP -e ssh eboss_info.txt ebossadmin@globusconnect-app-01.iso.port.ac.uk:/data/eboss
+The authenticity of host 'globusconnect-app-01.iso.port.ac.uk (148.197.254.16)' can't be established.
+ECDSA key fingerprint is SHA256:J8sBl39iaDwIODEMu7Xw5NXnKA1iXBylKmBIyeThyEI.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'globusconnect-app-01.iso.port.ac.uk,148.197.254.16' (ECDSA) to the list of known hosts.
+ebossadmin@globusconnect-app-01.iso.port.ac.uk's password: 
+sending incremental file list
+eboss_info.txt
+          57 100%    0.00kB/s    0:00:00 (xfer#1, to-check=0/1)
+sent 156 bytes  received 31 bytes  9.59 bytes/sec
+total size is 57  speedup is 0.30
+login5:~> 
+The second account is the user account . These are the credentials you give users to download via globus.
+
+user: ebossguest
+pw: !!860ss
+
+The UoP endpoint is :- "University Of Portsmouth ICG Endpoint"
+
+so you enter the ebossguest credentials for the end point.
+
+You can test globus with https://www.globus.org/globus-connect-personal
+
+Let me know if you need help.e
+
+kr Gary
+
+ps. Ill setup the sftp next.
+
+
+-------------------------------
+Hi Violeta,
+
+The sftp server is login7.sciama.icg.port.ac.uk
+
+I have created an sftp account "ebossguest" with password "!!860ss" .
+
+You can give these credentials to your download users:-
+
+login8:~> sftp ebossguest@login7.sciama.icg.port.ac.uk
+The authenticity of host 'login7.sciama.icg.port.ac.uk (148.197.10.70)' can't be established.
+RSA key fingerprint is SHA256:u5TMgG2XtfURgBIYxt86KygqHYagD7VP2gRQ91nKRCY.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'login7.sciama.icg.port.ac.uk,148.197.10.70' (RSA) to the list of known hosts.
+ebossguest@login7.sciama.icg.port.ac.uk's password: 
+Connected to login7.sciama.icg.port.ac.uk.
+sftp> ls
+downloads  
+sftp> cd downloads
+sftp> ls
+eboss_info.txt  
+sftp> 
+
+You can transfer Sciama data to the download area :-
+
+login8:~> pwd
+/users/gonzalev
+login8:~> cp eboss_info.txt /mnt/astro3/sftp/ebossguest/downloads
+
+Let me know if you need help.
+
+kr  Gary
+
