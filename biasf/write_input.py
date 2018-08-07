@@ -100,38 +100,51 @@ if (not os.path.exists(boxfile)):
 else:
 	print ('Reading:', boxfile)
 
+# Initialize temporary arrays and indexes
+massh, xx, yy, zz = [np.array([]) for i in range(4)]
+ival = 0
+val = 50000 
+
+# Get number of lines for the halo file
+num_lines = sum(1 for line in open(boxfile)) - 1
+
 # Read file line by line
-ff =open(boxfile, 'r') ; iline =0
-for line in ff:
-	massh = float(line.split()[6])
+ff = open(boxfile, 'r')
+for iline, line in enumerate(ff):
+	massh = np.append(massh, float(line.split()[6]))
+	xx = np.append(xx, float(line.split()[0]))
+	yy = np.append(yy, float(line.split()[1]))
+	zz = np.append(zz, float(line.split()[2]))	
 
-	for i, imlow in enumerate(mlow):
-		imhigh = mhigh[i] #; print (imlow, massh, imhigh)
-
-		if ((massh>=imlow) & (massh<imhigh)):
-			x = (line.split()[0])
-			y = (line.split()[1])
-			z = (line.split()[2])
-
-			# Creating the input for CUTE
+        ival += 1 #; print (ival)
+	if ((ival > val) or (iline == num_lines) ):
+		for i, imlow in enumerate(mlow):
 			massfile = pathtemp+space+'_'+'full'+'_'+namebox+'_'+'xyz'+'_'+str(imlow)+'.txt'
-			if os.path.exists(massfile):
-				with open(massfile, 'a') as outf:
-					outf.write(x+' '+y+' '+z+' \n')
-					outf.closed
-					
-			else:
-				with open(massfile, 'w') as outf:
-					outf.write(x+' '+y+' '+z+' \n')
-					outf.closed
-					continue
+			imhigh = mhigh[i] 
 
-	##Testing------------
-        #iline += 1 #; print (iline)
-	#if (iline>100):
-	#	print ('Testing finished')
-	#	break
-	##-------------------
+			ind = np.where((massh>=imlow) & (massh<imhigh))
+			if (np.shape(ind)[1]>0):
+				tofile = zip(xx[ind], yy[ind], zz[ind], massh[ind])
+				#print(np.shape(ind)[1],' to ',massfile)
+				if os.path.exists(massfile):
+					with open(massfile, 'a') as outf:
+						np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %10.5f %10.5f'))     
+						outf.closed
+				else:
+					with open(massfile, 'w') as outf:
+						np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %10.5f %10.5f'))     
+						outf.closed
+
+		# Reset arrays				
+		ival = 0
+		massh, xx, yy, zz = [np.array([]) for i in range(4)]
+		print (iline, ' lines read')
+
+	        ##Testing------------					
+		#if (iline>3*val):
+		#	print ('Testing finished')
+		#	break
+	        ##-------------------
 
 ff.close()
 
