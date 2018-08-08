@@ -1,13 +1,12 @@
 import numpy as np
 import sys, os
-import glob
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 # Path to CUTE output and output plots
 ocat = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/biasf/'
-path2plot = ocat+'/plots/'
+path2plot = ocat+'plots/'
 
 # Read the HMF mass bins
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
@@ -17,7 +16,7 @@ mlow, mhigh = np.loadtxt(mfile, usecols= (0, 1), unpack=True)
 space = 'rspace' #'zspace'
 
 # Check CUTE output
-check_output = True 
+check_output = False 
 if check_output:
 	for ix in range(3):
 		for iy in range(3):
@@ -36,12 +35,12 @@ if check_output:
 
 
 # Plot CUTE outpus
-doplots = False
+doplots = True
 if doplots:
 	for i, imlow in enumerate(mlow):
 		fig = plt.figure(figsize = (8., 9.))
-		xtit = '${\\rm r (h^{-1}\\rm{Mpc})}$'
-		ytit = '${\\rm \\epsilon(r)}$'
+		xtit = '${\\rm log_{10}(r /h^{-1}\\rm{Mpc}))}$'
+		ytit = '${\\rm log_{10}(\\xi(r))}$'
 		plt.xlabel(xtit) ; plt.ylabel(ytit)
 		plotname = '2PCF_'+str(imlow)+'.png'
 
@@ -58,7 +57,7 @@ if doplots:
 					ind = np.where(xi>0.)
 					if (icount<1):
 						leg = str(imlow)+\
-						    '$\leq M_{\\rm halo}(h^{-1}\\rm{M_{\odot}})$'+\
+						    '$\leq M_{\\rm halo}(h^{-1}\\rm{M_{\odot}})<$'+\
 						    str(mhigh[i])
 						plt.plot(np.log10(r[ind]), np.log10(xi[ind]), \
 								 label=leg, color = 'k')
@@ -67,8 +66,6 @@ if doplots:
 								 color = 'k')
 		leg = plt.legend(loc=1)
 		leg.draw_frame(False)
-		fig.savefig(path2plot + plotname)
+		fig.savefig(path2plot + plotname) ; plt.close()
 		print ('Ouput: ', path2plot + plotname)
-
-		
 
