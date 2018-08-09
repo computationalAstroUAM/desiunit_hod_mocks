@@ -59,11 +59,10 @@ mlow, mhigh, hmf, mhmean, mhmed = \
     np.loadtxt(mfile, usecols= (0,1,2,3,4), unpack=True )
 mhist = mhmed
 
-# Read bias ------ to be updated to reading the new tables when ready 
-bfile = '/users/savila/ELGs_eBOSS/CUTE_box/plots/Halos/Mh_n_b_Halostest_halfres.txt'
-#bh = np.genfromtxt(bfile, usecols=(2))
-mhist, hmf, bh = np.genfromtxt(bfile, usecols=(0, 1, 2), unpack=True)
-hmf = hmf/pow(500.,3)
+# Read bias function
+bfile = halodir+'bias_rl20.0_rh80.0.txt'
+bh = np.loadtxt(mfile, usecols= (1), unpack=True )
+
 #-------------------------------------------------------
 
 #Grid for mu and fsat
@@ -157,7 +156,7 @@ print("ngal=",ncen+nsat," ngal/n_targ=",(ncen+nsat)/n_targ)
 print("  ")
 
 if doplot:
-    plotname = halodir+'/plots/bestfit_gauss.pdf'
+    plotname = halodir+'plots/bestfit_gauss.png'
     fig = plt.figure(figsize = (8., 9.))
     xtit = '${\\rm logM_{h}}$' ; ytit = '${\\rm logN}$'
     plt.xlabel(xtit) ; plt.ylabel(ytit)

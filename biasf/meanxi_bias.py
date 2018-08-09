@@ -19,7 +19,7 @@ rdm, xidm = np.loadtxt(fxidm ,unpack = True)
 # Read the HMF mass bins
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
 mfile = halodir + 'hmf.txt'
-mlow, mhigh = np.loadtxt(mfile, usecols= (0, 1), unpack=True)
+mlow, mhigh, mhmed = np.loadtxt(mfile, usecols= (0, 1, 4), unpack=True)
 
 # Path to CUTE output and plots
 ocat = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/biasf/'
@@ -135,13 +135,21 @@ rmax = [70.,80.]
 abias = np.linspace(0.1,10.,1000)
 chis = np.zeros((len(abias))) ; chis.fill(999.)
 
+mbias = np.zeros((len(rmin)*len(rmax),len(mlow))) ; mbias.fill(-999.)
+diff = np.zeros((len(rmin)*len(rmax)))
+rlrh_name = []
+
+icount = -1
 for rl in rmin:
     for rh in rmax:
+        icount += 1
+        rlrh_name = np.append(rlrh_name,'rl'+str(rl)+'_rh'+str(rh))
+
         ind = np.where((r0>=rl) & (r0<=rh))
         rr = r0[ind]
 
         # Plot bias
-        plotbias = True
+        plotbias = False
         if plotbias:
             fig = plt.figure(figsize = (8., 9.))
             ax = fig.add_subplot(111)
@@ -154,6 +162,7 @@ for rl in rmin:
             plt.xlabel(xtit) ; plt.ylabel(ytit)
             plt.xlim(xmin,xmax) ; plt.ylim(ymin,ymax)
 
+        idiff = 0
         for i, imlow in enumerate(mlow):
             oxi1 = mxi[i,:] ; oerr1=exi[i,:]
             oxi = oxi1[ind] ; oerr = oerr1[ind]
@@ -164,14 +173,21 @@ for rl in rmin:
                 chis[ib] = chi2(oxi,dmh,oerr)
 
             ib = np.where(chis == np.nanmin(chis))
-            bias = abias[ib]
+            bias = abias[ib][0]
+            mbias[icount,i] = bias
+
+            bb = np.sqrt(oxi/dm)
+            ebb= oerr/(2*bb)
+            mbb = np.zeros(len(bb)) ; mbb.fill(bias)
+            idiff = idiff + chi2(bb,mbb,ebb)
 
             if plotbias:
                 leg = '['+str(imlow)+','+str(mhigh[i])+')'
-                yy = np.sqrt(oxi/dm)
-                ax.plot(rr, yy, label=leg, color=cols[i])
-                ax.plot([xmin,xmax],[bias,bias],\
+                ax.errorbar(rr, bb, ebb, label=leg, color=cols[i])
+                ax.plot([xmin,xmax],[bias,bias], \
                             linestyle='--',color=cols[i])
+
+        diff[icount] = idiff
 
         if plotbias:
             leg = ax.legend(loc=1, handlelength=0, handletextpad=0)
@@ -183,6 +199,19 @@ for rl in rmin:
 
 
             # Save fig
-            plotname = 'bias_rl'+str(rl)+'_rh'+str(rh)+'.png'
+            plotname = 'bias_'+rlrh_name[icount]+'.png'
             fig.savefig(path2plot + plotname)
             print ('Ouput: ', path2plot + plotname)
+
+# Write out the bias function measured within 
+# the separation range best fitted by a constant bias.
+ind = np.where(diff == np.nanmin(diff))
+
+bb = np.squeeze(mbias[ind,:]) # Remove single-dimensional entries 
+tofile = zip(mhmed,bb)
+
+bfile = halodir + 'bias_'+rlrh_name[icount]+'.txt'
+with open(bfile,'w') as outf:
+    np.savetxt(outf,tofile,fmt=('%10.5f %10.5f'))
+    outf.closed
+print ('Bias function in: ',bfile)
