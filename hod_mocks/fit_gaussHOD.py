@@ -46,11 +46,13 @@ alpha = 0.8
 fix_fsat = False   ; fsat0 = 0.2
 fix_mu =   False  ; mu0 = 12.
 doplot =   True
+verbose =  False
 ############################# 
 
-print "## Target ##"
-print "b=",b_targ, " n=",n_targ
-print "  "
+if verbose:
+    print "## Target ##"
+    print "b=",b_targ, " n=",n_targ
+    print "  "
 
 # Read HMF (number of haloes per dlogMh per volume)
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
@@ -61,7 +63,7 @@ mhist = mhmed
 
 # Read bias function
 bfile = halodir+'bias_rl20.0_rh80.0.txt'
-bh = np.loadtxt(mfile, usecols= (1), unpack=True )
+bh = np.loadtxt(bfile, usecols= (1), unpack=True )
 
 #-------------------------------------------------------
 
@@ -76,9 +78,10 @@ if fix_mu:
 else:
     mu_arr = np.arange(11.0,15.0,0.01)
 
-print ('Halo masses:',mhist)
-print ('fsat values:',fsat_arr)
-print ('mu values:',mu_arr)
+if verbose:
+    print ('Halo masses:',mhist)
+    print ('fsat values:',fsat_arr)
+    print ('mu values:',mu_arr)
 
 # Set grid arrays
 bgal= np.zeros((len(fsat_arr),len(mu_arr)))
@@ -98,6 +101,8 @@ for ii,fsat in enumerate(fsat_arr):
 
         Integrand = hmf*gcent(mhist, mu, sig)
         Ic = integrate.simps(Integrand,mhist)
+        Ic = integrate.simps(Integrand,mhist)
+#        print Ic,'###' 
         Ac[ii,jj] = ncen/Ic
 
         if (ncen<=0.):
@@ -132,9 +137,10 @@ for ii,fsat in enumerate(fsat_arr):
         delt[ii,jj] = delta_sq(bgal[ii,jj], b_targ)
 
 #Find the parameters that give us the minimum "error"
-print("  ")
-print "delt=",delt 
-print("  ")
+if verbose:
+    print("  ")
+    print "delt=",delt 
+    print("  ")
 print("Input b, n=",b_targ, n_targ)
 print("Fix params: alpha= ",alpha," sigma= ",sig)
 m,n= np.where(delt==np.nanmin(delt))
