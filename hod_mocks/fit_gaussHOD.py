@@ -63,7 +63,7 @@ mhist = mhmed
 
 # Read bias function
 bfile = halodir+'bias_rl20.0_rh80.0.txt'
-bh = np.loadtxt(bfile, usecols= (1), unpack=True )
+bh = np.loadtxt(bfile, usecols= (1,), unpack=True )
 
 #-------------------------------------------------------
 
