@@ -1,9 +1,12 @@
 import scipy.integrate as integrate
 import numpy as np
 import sys
+from decimal import *
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+
+getcontext().prec = 28 #For 'decimal' precision
 
 def Calcgsat(M, M0, M1, alpha):
     Nsat_Mh = 0. 
@@ -76,7 +79,7 @@ else:
 if fix_mu:
     mu_arr = np.array([mu0])
 else:
-    mu_arr = np.arange(11.0,15.0,0.01)
+    mu_arr = np.arange(10.5,13.5,0.005)
 
 if verbose:
     print ('Halo masses:',mhist)
@@ -98,20 +101,17 @@ for ii,fsat in enumerate(fsat_arr):
 
         # Calculate Ac
         ncen = n_targ*(1.-fsat)
-
-        Integrand = hmf*gcent(mhist, mu, sig)
-        Ic = integrate.simps(Integrand,mhist)
-        Ic = integrate.simps(Integrand,mhist)
-#        print Ic,'###' 
-        Ac[ii,jj] = ncen/Ic
-
         if (ncen<=0.):
             print ('ERROR no centrals for fsat,mu=',fsat,mu)
             bgal[ii,jj] = 999. ; delt[ii,jj] =  999.
             break
 
+        Integrand = hmf*gcent(mhist, mu, sig)
+        Ic = integrate.simps(Integrand,mhist)
+        Ac[ii,jj] = ncen/Ic #; print Ic,'# Ic' 
+
         # Calculate As
-        nsat = n_targ*fsat
+        nsat = n_targ*fsat 
 
         As[ii,jj] = 0. 
         if (fsat>0.):
@@ -123,23 +123,23 @@ for ii,fsat in enumerate(fsat_arr):
         # Calculate the galaxy bias
         Integrand = bh*hmf*gcent(mhist, mu, sig)
         Ic = integrate.simps(Integrand,mhist)
-        bcen = Ac[ii,jj]*Ic/n_targ
+        bcen = Ac[ii,jj]*Ic
 
         bsat = 0.
         if (fsat>0.):
             Integrand = bh*hmf*gsat(mhist, logM0, logM1, alpha)
             Is = integrate.simps(Integrand,mhist)
-            bsat = As[ii,jj]*Is/n_targ
+            bsat = As[ii,jj]*Is
 
-        bgal[ii,jj] = bcen+bsat
-        
+        bgal[ii,jj] = (bcen+bsat)/n_targ
+
         #Compute the "error" wrt the target quantities
         delt[ii,jj] = delta_sq(bgal[ii,jj], b_targ)
 
 #Find the parameters that give us the minimum "error"
 if verbose:
     print("  ")
-    print "delt=",delt 
+    print("delt=",delt) 
     print("  ")
 print("Input b, n=",b_targ, n_targ)
 print("Fix params: alpha= ",alpha," sigma= ",sig)
@@ -158,7 +158,7 @@ ncen = Ac[k,l][0]*Ic
 Integrand = hmf*gsat(mhist, mu_arr[l][0] - 0.1, mu_arr[l][0] + 0.3, alpha)
 Is = integrate.simps(Integrand,mhist)
 nsat = As[k,l][0]*Is
-print("ngal=",ncen+nsat," ngal/n_targ=",(ncen+nsat)/n_targ) 
+print("ngal(As,Ac)=",ncen+nsat," ngal/n_targ=",(ncen+nsat)/n_targ) 
 print("  ")
 
 if doplot:
