@@ -6,29 +6,31 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
-getcontext().prec = 28 #For 'decimal' precision
+getcontext().prec = 6 #For 'decimal' precision
 
 def Calcgsat(M, M0, M1, alpha):
     Nsat_Mh = 0. 
     if (M>M0):
         Nsat_Mh = (((10**M) - 10**M0)/10**M1)**alpha
     return Nsat_Mh
-
 gsat = np.vectorize(Calcgsat)
 
 def Calcgcent(M, mu, sig):
-    return 1.0/(sig*np.sqrt(np.pi*2.0))*np.exp(-(M - mu)**2/(2.0*sig**2))
+    return np.exp(-(M - mu)**2/(2.0*sig**2))/(sig*np.sqrt(np.pi*2.0))
 gcent = np.vectorize(Calcgcent)
 
 def CalcAsat(nd, vol, fsat, Is):
     return nd*vol*fsat/Is
-
 Asat = np.vectorize(CalcAsat)
 
 def CalcAcen(nd, vol, fsat, Ic):
     return nd*vol*(1.0 - fsat)/Ic
-
 Acen = np.vectorize(CalcAcen)
+
+def mu2m0(mu):
+    return mu - 0.1
+def mu2m1(mu):
+    return mu + 0.3
 
 #Metrics that we want to minimisize (or "error")
 def delta_sq(b_mod, b_targ):
@@ -44,11 +46,11 @@ b_targ = 1.22
 
 # Fixed parameters 
 sig = 0.12
-alpha = 0.8
+alpha = 1. #0.8
 ############################# 
-fix_fsat = False   ; fsat0 = 0.2
+fix_fsat = False  ; fsat0 = 0.2
 fix_mu =   False  ; mu0 = 12.
-doplot =   True
+doplot =   False
 verbose =  False
 ############################# 
 
@@ -60,21 +62,23 @@ if verbose:
 # Read HMF (number of haloes per dlogMh per volume)
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
 mfile = halodir+'hmf.txt'
-mlow, mhigh, hmf, mhmean, mhmed = \
-    np.loadtxt(mfile, usecols= (0,1,2,3,4), unpack=True )
-mhist = mhmed
+hmf1, mhmed1 = \
+    np.loadtxt(mfile, usecols= (2,3), unpack=True )
+mhist = mhmed1 #mhmed1[1:-1]
+hmf = hmf1 #hmf1[1:-1]
 
 # Read bias function
 bfile = halodir+'bias_rl20.0_rh80.0.txt'
-bh = np.loadtxt(bfile, usecols= (1,), unpack=True )
+bh1 = np.loadtxt(bfile, usecols= (1,), unpack=True )
+bh = bh1 #bh1[1:-1]
 
 #-------------------------------------------------------
 
 #Grid for mu and fsat
 if fix_fsat:
-    fsat_arr = np.array([fsat0])  
+    fsat_arr = np.array([fsat0])
 else:
-    fsat_arr = np.arange(0.002, 0.3 ,0.005) 
+    fsat_arr = np.arange(0.002, 0.3 ,0.005)
 
 if fix_mu:
     mu_arr = np.array([mu0])
@@ -96,8 +100,8 @@ As = np.zeros_like(bgal)
 #and compute (n,b) 
 for ii,fsat in enumerate(fsat_arr):
     for jj,mu in enumerate(mu_arr):
-        logM0 = mu - 0.1
-        logM1 = mu + 0.3
+        logM0 = mu2m0(mu)
+        logM1 = mu2m1(mu)
 
         # Calculate Ac
         ncen = n_targ*(1.-fsat)
@@ -123,15 +127,12 @@ for ii,fsat in enumerate(fsat_arr):
         # Calculate the galaxy bias
         Integrand = bh*hmf*gcent(mhist, mu, sig)
         Ic = integrate.simps(Integrand,mhist)
-        bcen = Ac[ii,jj]*Ic
-
-        bsat = 0.
+        Is = 0.
         if (fsat>0.):
             Integrand = bh*hmf*gsat(mhist, logM0, logM1, alpha)
             Is = integrate.simps(Integrand,mhist)
-            bsat = As[ii,jj]*Is
 
-        bgal[ii,jj] = (bcen+bsat)/n_targ
+        bgal[ii,jj] = (Ac[ii,jj]*Ic + As[ii,jj]*Is)/n_targ
 
         #Compute the "error" wrt the target quantities
         delt[ii,jj] = delta_sq(bgal[ii,jj], b_targ)
@@ -141,25 +142,36 @@ if verbose:
     print("  ")
     print("delt=",delt) 
     print("  ")
-print("Input b, n=",b_targ, n_targ)
-print("Fix params: alpha= ",alpha," sigma= ",sig)
+print('Input b= {}, n= {}'.format(b_targ, n_targ))
+print('Fix params: alpha= {}, sigma= {}'.format(alpha,sig))
 m,n= np.where(delt==np.nanmin(delt))
-print('Mimimum:')
 k=m
 l=n 
-print("Delta=",delt[k,l][0])
-print(" b=",bgal[k,l][0],"fsat=",fsat_arr[k][0],"mu=",mu_arr[l][0])
-print("Derived params: Ac= ",Ac[k,l][0]," As= ",As[k,l][0])
-print("Re-scaled params: logM0=",mu_arr[l][0] - 0.1," logM1=",mu_arr[l][0] + 0.3)
-print("  ")
-Integrand = hmf*gcent(mhist, mu_arr[l][0], sig)
+print('Minimum delta= {}'.format(delt[k,l][0]))
+print('  ')
+print('-----Best fit-----')
+b_bf = bgal[k,l][0] ; fsat_bf = fsat_arr[k][0] ; mu_bf = mu_arr[l][0]
+print('b= {:10.4f}, fsat= {:10.4f}, mu= {:10.4f}'.format(b_bf,fsat_bf,mu_bf))
+ac_bf = Ac[k,l][0] ; as_bf = As[k,l][0] 
+print('Derived params: Ac= {}, As= {}'.format(ac_bf,as_bf))
+m0_bf = mu2m0(mu_bf) ; m1_bf = mu2m1(mu_bf)
+print('Re-scaled params: logM0= {:10.4f}, logM1= {:10.4f}'.format(m0_bf,m1_bf))
+print('  ')
+print('-----Test-----')
+Integrand = hmf*gcent(mhist, mu_bf, sig)
 Ic = integrate.simps(Integrand,mhist)
-ncen = Ac[k,l][0]*Ic
-Integrand = hmf*gsat(mhist, mu_arr[l][0] - 0.1, mu_arr[l][0] + 0.3, alpha)
+Integrand = hmf*gsat(mhist, m0_bf, m1_bf, alpha)
 Is = integrate.simps(Integrand,mhist)
-nsat = As[k,l][0]*Is
-print("ngal(As,Ac)=",ncen+nsat," ngal/n_targ=",(ncen+nsat)/n_targ) 
-print("  ")
+ncs = ac_bf*Ic + as_bf*Is
+print('ngal(As,Ac)= {}, ngal/n_targ= {}'.format(ncs,ncs/n_targ))
+
+Integrand = bh*hmf*gcent(mhist, mu_bf, sig)
+Ic = integrate.simps(Integrand,mhist)
+Integrand = bh*hmf*gsat(mhist, m0_bf, m1_bf, alpha)
+Is = integrate.simps(Integrand,mhist)
+bcs = (ac_bf*Ic + as_bf*Is)/n_targ
+print('bias(As,Ac)= {:10.4f}, bias/b_targ= {:10.4f}'.format(bcs,(bcs/b_targ)))
+print('--------------')
 
 if doplot:
     plotname = halodir+'plots/bestfit_gauss.png'

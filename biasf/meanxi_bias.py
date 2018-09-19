@@ -19,7 +19,7 @@ rdm, xidm = np.loadtxt(fxidm ,unpack = True)
 # Read the HMF mass bins
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
 mfile = halodir + 'hmf.txt'
-mlow, mhigh, mhmed = np.loadtxt(mfile, usecols= (0, 1, 4), unpack=True)
+mlow, mhigh, mhmed = np.loadtxt(mfile, usecols= (0, 1, 3), unpack=True)
 
 # Path to CUTE output and plots
 ocat = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/biasf/'
