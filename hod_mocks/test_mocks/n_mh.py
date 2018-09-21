@@ -4,6 +4,18 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
+def Calcgsat(M, M0, M1, alpha):
+    Nsat_Mh = 0. 
+    if (M>M0):
+        Nsat_Mh = (((10**M) - 10**M0)/10**M1)**alpha
+    return Nsat_Mh
+gsat = np.vectorize(Calcgsat)
+
+def Calcgcent(M, mu, sig):
+    return np.exp(-(M - mu)**2/(2.0*sig**2))/(sig*np.sqrt(np.pi*2.0))
+gcent = np.vectorize(Calcgcent)
+
+
 # Read the HMF mass bins
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
 mfile = halodir + 'hmf.txt'
@@ -38,25 +50,39 @@ for i, imlow in enumerate(mlow):
     H, bin_edges = np.histogram(mh[ind],bins=np.append(m_arr,mmax))
     histc[i,:] = H/volume/dm
 
+# Plot
 plotname = halodir+'plots/mock_test.png'
 fig = plt.figure(figsize = (8., 9.))
 xtit = '${\\rm logM_{h}}$' ; ytit = '${\\rm logN}$'
 plt.xlabel(xtit) ; plt.ylabel(ytit)
 plt.ylim([-6, 0])
 
+# HMF
 plt.plot(mhmed, np.log10(mhf), 'k',label='HMF')
 
+# Input HOD
+sig=0.12 ; alpha = 1.
+mu=11.84
+Ac=0.023
+As=0.0034
+ncen_mh = mhf*Ac*gcent(mhmed, mu, sig)
+nsat_mh = mhf*As*gsat(mhmed, mu - 0.1, mu + 0.3, alpha)
+
+plt.plot(mhmed, np.log10(ncen_mh), 'g--', label='Input: Centrals')
+plt.plot(mhmed, np.log10(nsat_mh), 'b--', label='Input: Satellites')
+
+# Counted numbers
 for i, imlow in enumerate(mlow):
     yc = histc[i,:] ; ys = hists[i,:]
 
     if (i == 1):
-        plt.plot(mhist, np.log10(yc), 'g--', label='Centrals')
-        plt.plot(mhist, np.log10(ys), 'b:', label='Satellites')
-        plt.plot(mhist, np.log10(yc+ys), 'r-', label='All')
+        #plt.plot(mhist, np.log10(yc+ys), 'r-', label='All')
+        plt.plot(mhist, np.log10(yc), 'g-', label='Centrals')
+        plt.plot(mhist, np.log10(ys), 'b-', label='Satellites')
     else:
-        plt.plot(mhist, np.log10(yc), 'g--')
-        plt.plot(mhist, np.log10(ys), 'b:')
-        plt.plot(mhist, np.log10(yc+ys), 'r-')
+        #plt.plot(mhist, np.log10(yc+ys), 'r-')
+        plt.plot(mhist, np.log10(yc), 'g-')
+        plt.plot(mhist, np.log10(ys), 'b-')
 
 leg = plt.legend(loc=1)
 leg.draw_frame(False)
