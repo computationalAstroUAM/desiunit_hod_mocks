@@ -1,3 +1,5 @@
+/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27> tar cz OuterRim_STEP266_fofproperties_* | ssh violeta@dtn01.nersc.gov tar zxv -C /global/u2/v/violeta/OuterRim/STEP266_z0.865/subvols27
+
 # The OuterRim simulation  
 
 The OuterRim simulation was run on a cubic volume of side 3000 Mpc$/h$, with dark matter particles with masses of $1.9\cdot 10^9 M_{\odot}/h$. The simulation has 100 snapshots, with 34 between $1<z<3.5$. 
