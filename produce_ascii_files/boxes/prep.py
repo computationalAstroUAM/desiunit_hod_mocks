@@ -1,11 +1,21 @@
 import sys, os
 import numpy as np
 
+istep = 300
+iz = 0.656
+
+#241 1.055  R
+#253 0.959  R
+#279 0.779  R 
+#300 0.656  R  
+
 # Directory with the OuterRim simulation haloes
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
-istep = 266
 
-outdir = halodir+'ascii/OuterRim_STEP'+str(istep)+'_z0.865/subvols27/'
+# Create output directory if it does not exist
+outdir = halodir+'ascii/OuterRim_STEP'+str(istep)+'_z'+str(iz)+'/subvols27/'
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
 
 root = outdir+'OuterRim_STEP'+str(istep)+'_fofproperties_'
 

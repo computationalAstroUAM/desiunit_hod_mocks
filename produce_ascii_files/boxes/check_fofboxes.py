@@ -6,12 +6,25 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+istep = 241
+iz = 1.055
+
+# 266 0.865 D
+# 241 1.055 
+# 253 0.959 
+# 279 0.779  
+# 300 0.656  
+
 # Directory with the OuterRim simulation haloes
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
-istep = 266
 
-outdir = halodir+'ascii/OuterRim_STEP'+str(istep)+'_z0.865/subvols27/'
+outdir = halodir+'ascii/OuterRim_STEP'+str(istep)+'_z'+str(iz)+'/subvols27/'
 root = outdir+'OuterRim_STEP'+str(istep)+'_fofproperties_'
+
+# Directory with plots
+plotdir = outdir+'plots/'
+if not os.path.exists(plotdir):
+    os.makedirs(plotdir)
 
 # Subvolumes
 lbox = 3000.
@@ -31,7 +44,7 @@ for ix in range(ncell):
                 for line in ff:
                     num += 1
                 ff.close()
-                print(ifile,num,' lines in ',filename)
+                print('{} {} lines in  {}'.format(ifile,num,filename))
 
                 # Downsample to plot
                 sampling_rate = 0.001
@@ -53,7 +66,7 @@ for ix in range(ncell):
                 ff.close()                                
 
                 # Plot
-                print('Plot ',len(xp),' points')
+                print('Plot {} points'.format(len(xp)))
                 fig = plt.figure() 
                 ax = fig.add_subplot(111,projection='3d')
                 xtit ='x (Mpc/h)' ; ytit ='y (Mpc/h)'; ztit ='z (Mpc/h)'
@@ -61,13 +74,13 @@ for ix in range(ncell):
                 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit) ; ax.set_zlabel(ztit)
                 ax.scatter(xs=xp,ys=yp,zs=zp)
                 
-                plotfile = outdir+'plots/OuterRim_STEP'+str(istep)+\
+                plotfile = plotdir+'OuterRim_STEP'+str(istep)+\
                     '_'+str(ix)+str(iy)+str(iz)+'.pdf'
                 fig.savefig(plotfile)
-                print 'Test plot: ',plotfile
+                print ('Test plot: {} '.format(plotfile))
 
                 # Testing -------------
-                #ifile += 1
-                #if ifile>1:
-                #    sys.exit()
+                ifile += 1
+                if ifile>1:
+                    sys.exit()
                 #-------------------------

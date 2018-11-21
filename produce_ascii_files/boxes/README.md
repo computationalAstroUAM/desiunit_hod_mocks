@@ -4,4 +4,7 @@
 
 *allfofboxes.py* First attempt to create the boxes going line by line. It takes far too long.
 
-*check_fofboxes.py* Checks if all the 27 boxes were produced and make plots with the distribution of haloes.
+*check_fofboxes.py* Checks if all the 27 boxes were produced and make plots with the distribution of haloes. This can be run in the sciama queue, `qsub run.sh`
+
+
+

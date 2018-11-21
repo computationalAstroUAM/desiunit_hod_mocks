@@ -1,13 +1,20 @@
-import sys, os, glob, getpass
+0;136;0cimport sys, os, glob, getpass
 sys.path.append('/mnt/lustre/eboss/OuterRim/genericio/python/')
 import genericio as gio
 import numpy as np
 
+istep = 241
+iz = 1.055
+
+#241 1.055  
+#253 0.959 R 
+#279 0.779 R  
+#300 0.656 R  
+
 # Directory with the OuterRim simulation haloes
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
-istep = 266
 
-outdir = halodir+'ascii/OuterRim_STEP'+str(istep)+'_z0.865/subvols27/'
+outdir = halodir+'ascii/OuterRim_STEP'+str(istep)+'_z'+str(iz)+'/subvols27/'
 
 root = outdir+'OuterRim_STEP'+str(istep)+'_fofproperties_'
 
@@ -92,3 +99,4 @@ for infile in files:
     #-------------------------
 
 print ('Output in ',root)
+#
