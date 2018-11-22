@@ -1,4 +1,4 @@
-0;136;0cimport sys, os, glob, getpass
+import sys, os, glob, getpass
 sys.path.append('/mnt/lustre/eboss/OuterRim/genericio/python/')
 import genericio as gio
 import numpy as np

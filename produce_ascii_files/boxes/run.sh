@@ -5,6 +5,7 @@
 
 #code2run=/users/gonzalev/eboss/mock_construction/produce_ascii_files/boxes/fof_boxes.py
 code2run=/users/gonzalev/eboss/mock_construction/produce_ascii_files/boxes/check_fofboxes.py
+code2run=/users/gonzalev/eboss/mock_construction/produce_ascii_files/boxes/check300_fofboxes.py
 #code2run=/users/gonzalev/eboss/mock_construction/produce_ascii_files/boxes/mass_bins.py
 
 echo '~~~~~~~~~~~~Run'

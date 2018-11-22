@@ -5,9 +5,9 @@
 
 code2run=/users/gonzalev/eboss/mock_construction/produce_ascii_files/boxes/fof_box.py
 
-xx=(0 1 2)
-yy=(0 1 2)
-zz=(0 1 2)
+xx=(0) #0 1 2)
+yy=(2) #0 1 2)
+zz=(2) #0 1 2)
 
 for ix in ${xx[@]} ; do
     for iy in ${yy[@]} ; do

@@ -9,8 +9,8 @@ from mpl_toolkits.mplot3d import Axes3D
 istep = 241
 iz = 1.055
 
-# 266 0.865 D
-# 241 1.055 
+# 266 0.865 Done
+# 241 1.055 Done
 # 253 0.959 
 # 279 0.779  
 # 300 0.656  
@@ -37,8 +37,9 @@ for ix in range(ncell):
         for iz in range(ncell):
             filename = root+str(ix)+str(iy)+str(iz)+'.txt'
             if (not os.path.exists(filename)):
-                print('ERROR: file missing ',filename)
+                print('### ERROR: file missing {}'.format(filename))
             else: 
+                #ix = 0 ; iy = 2 ; iz = 2
                 # Count the lines in the file
                 ff = open(filename) ; num = 0
                 for line in ff:
@@ -77,10 +78,11 @@ for ix in range(ncell):
                 plotfile = plotdir+'OuterRim_STEP'+str(istep)+\
                     '_'+str(ix)+str(iy)+str(iz)+'.pdf'
                 fig.savefig(plotfile)
+                plt.close(fig)
                 print ('Test plot: {} '.format(plotfile))
 
                 # Testing -------------
-                ifile += 1
-                if ifile>1:
-                    sys.exit()
+                #ifile += 1
+                #if ifile>1:
+                #    sys.exit()
                 #-------------------------
