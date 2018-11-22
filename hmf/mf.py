@@ -4,8 +4,6 @@ import genericio as gio
 import numpy as np
 import matplotlib ; matplotlib.use('Agg')                                    
 from matplotlib import pyplot as plt  
-from distinct_colours import get_distinct 
-cols = get_distinct(10) 
 
 def percentiles(val,data,weights=None):
     if (val <0 or val >1):
@@ -30,10 +28,20 @@ def percentiles(val,data,weights=None):
 
     return percentiles
 
+# Make a plot?
+makeplot = True
+if makeplot:
+    from distinct_colours import get_distinct 
+    cols = get_distinct(10) 
+
 # Bins
-edges = np.array([10.58, 10.7, 10.8, 10.9, 11., 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 12., 12.1, 12.2, 12.3, 12.4, 12.5, 12.7, 13., 13.5, 14., 16.])
-mhist = np.array([10.64, 10.75, 10.85, 10.95, 11.05, 11.15, 11.25, 11.35, 11.45, 11.55, 11.65, 11.75, 11.85, 11.95, 12.05, 12.15, 12.25, 12.35, 12.45, 12.6, 12.85, 13.25, 13.75, 15.])
+#edges = np.array([10.58, 10.7, 10.8, 10.9, 11., 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 12., 12.1, 12.2, 12.3, 12.4, 12.5, 12.7, 13., 13.5, 14., 16.])
+edges = np.concatenate( [ np.array( np.arange(10.58,12.4999,0.04)), np.array(np.arange(12.5,13.6,0.05)),  np.array(np.arange(13.6,14.0,0.1)),np.array(np.arange(14.2,14.6,0.2)), np.array([16.]) ])
+print "edges",edges
+
 dm = edges[1:]-edges[:-1]
+mhist = edges[1:]-0.5*dm 
+print "mhist",mhist
 
 # Bins for the calculation of the median mass in each bin
 mhmed = np.zeros_like(mhist)
@@ -42,6 +50,9 @@ xbmed = np.zeros((len(mhist),nbmed))
 for i,ed in enumerate(edges[:-1]):
     xbmed[i,:] = np.linspace(ed, edges[i+1], num=nbmed)
 ybmed = np.zeros((len(mhist),nbmed-1))
+
+# Mean mass in each bin
+xmean = np.zeros(len(mhist))
 
 ###################
 # Directory with the OuterRim simulation haloes
@@ -74,8 +85,7 @@ ax.set_xlabel(xtit,fontsize = fs) ; ax.set_ylabel(ytit,fontsize = fs)
 #-------------------------------------------------------------                
 
 #for iz,istep in enumerate(step):  # Loop over all redshifts
-# Loop over a subset of redshifts
-for iz,istep in enumerate([266]):    
+for iz,istep in enumerate([266]):  # Loop over a subset of redshifts  
     zz = redshift[np.where(step == istep)]
     print 'Processing snapshot at redshift ',zz
     nroot = halodir+'HaloCatalog/STEP'+str(istep)    
@@ -83,7 +93,7 @@ for iz,istep in enumerate([266]):
     # Initialize to 0 the halo mass functions
     ycount, yh = [np.zeros(len(mhist)) for _ in range(2)]
 
-    # Loop over each of the sub volumes the 
+    # Loop over each of the sub volumes
     infiles = glob.glob(nroot+'/*'+str(istep)+'.fofproperties#*')
     for inf,infile in enumerate(infiles):
         # Print out once the information stored in each file
@@ -105,6 +115,10 @@ for iz,istep in enumerate([266]):
         H, bins_edges = np.histogram(mh,bins=edges)
         yh = yh + H
 
+        # Mean
+        H, bins_edges = np.histogram(mh,bins=edges,weights=mh)
+        xmean = xmean + H
+
         # Build up histograms for the calculation of the median
         for i,ed in enumerate(edges[:-1]):
             edmed = xbmed[i,:]
@@ -115,7 +129,8 @@ for iz,istep in enumerate([266]):
         #if inf>1:
         #    break
         #-----------------------------
-        
+
+    xmean = xmean/yh
     ycount = ycount/dm/(lbox**3)
     yh = yh/dm/(lbox**3)
 
@@ -126,32 +141,35 @@ for iz,istep in enumerate([266]):
         mhmed[i] = percentiles(0.5,x,weights=y)
 
     # Write Halo Mass function to a file
-    tofile = zip(edges[:-1],edges[1:], ycount, mhmed, mhist, dm)
+    tofile = zip(edges[:-1],edges[1:], ycount, mhmed, mhist, dm, xmean)
     outfile = halodir+'hmf.txt'
+    #outfile = 'hmf.txt'
     with open(outfile, 'w') as outf:
-        outf.write('# log10Mmin_bin log10Mmax_bin Nhalos/dm/vol log10Mmedian_bin log10Mmean_bin dM  \n')
-        np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %6.4e %10.5f %10.5f %10.5f'))      
+        outf.write('# log10Mmin_bin log10Mmax_bin Nhalos/dm/vol log10Mmedian_bin (Mass bin mid point) dM log10Mmean_bin \n')
+        np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %6.4e %10.5f %10.5f %10.5f %10.5f'))      
     outf.closed  
 
     # Plot for all redshifts
-    ind = np.where(ycount >0.)
-    ax.plot(mhist[ind],np.log10(ycount[ind]),\
+    if makeplot:
+        ind = np.where(ycount >0.)
+        ax.plot(mhist[ind],np.log10(ycount[ind]),\
                 color=cols[iz],label='z='+str(zz))
 
-    ind = np.where(yh >0.)
-    ax.plot(mhist[ind],np.log10(yh[ind]),\
+        ind = np.where(yh >0.)
+        ax.plot(mhist[ind],np.log10(yh[ind]),\
                 color=cols[len(cols)-iz-1],linestyle=':',label=' from mass')
 
-
-# Legend
-plt.legend(loc=3,prop={'size':(fs-2)}) 
 
 # Directory with outputs (it'll be generated if it doesn't exist)
 outdir = '/users/'+getpass.getuser()+'/Outputs/out_shams/'
 if (not os.path.exists(outdir)): os.makedirs(outdir)
+print 'Output: ',outfile
 
-# Save figure
-plotfile = outdir+'outerrim_hmf.pdf'
-fig.savefig(plotfile)
-print 'Output: ',plotfile
-print '        ',outfile
+if makeplot:
+    # Legend
+    plt.legend(loc=3,prop={'size':(fs-2)}) 
+    # Save figure
+    plotfile = outdir+'outerrim_hmf.pdf'
+    fig.savefig(plotfile)
+    print 'Plot: ',plotfile
+
