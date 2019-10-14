@@ -28,6 +28,14 @@ def percentiles(val,data,weights=None):
 
     return percentiles
 
+# Read snapshot
+narg = len(sys.argv)
+if(narg == 2):
+    istep = int(sys.argv[1])
+    iz = 0
+else:
+    sys.exit('1 argument to be passed: step(snapshot number)')
+
 # Make a plot?
 makeplot = True
 if makeplot:
@@ -37,11 +45,11 @@ if makeplot:
 # Bins
 #edges = np.array([10.58, 10.7, 10.8, 10.9, 11., 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 12., 12.1, 12.2, 12.3, 12.4, 12.5, 12.7, 13., 13.5, 14., 16.])
 edges = np.concatenate( [ np.array( np.arange(10.58,12.4999,0.04)), np.array(np.arange(12.5,13.6,0.05)),  np.array(np.arange(13.6,14.0,0.1)),np.array(np.arange(14.2,14.6,0.2)), np.array([16.]) ])
-print "edges",edges
+print("edges={}".format(edges))
 
 dm = edges[1:]-edges[:-1]
 mhist = edges[1:]-0.5*dm 
-print "mhist",mhist
+print("mhist={}".format(mhist))
 
 # Bins for the calculation of the median mass in each bin
 mhmed = np.zeros_like(mhist)
@@ -74,7 +82,7 @@ fig = plt.figure(figsize=(8.5,9.))
 
 xtit = "${\\rm log}_{10}(\\rm{M/M_{\odot}}h^{-1})$"
 ytit = "${\\rm log}_{10}(\Phi/ Mpc^{-3}h^3 {\\rm dlog}_{10}M)$"
-                                                                             
+                                                                         
 xmin = 10. ; xmax = 16.                                                      
 ymin = -6.5 ; ymax = 0.    
 
@@ -84,92 +92,89 @@ ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit,fontsize = fs) ; ax.set_ylabel(ytit,fontsize = fs)        
 #-------------------------------------------------------------                
 
-#for iz,istep in enumerate(step):  # Loop over all redshifts
-for iz,istep in enumerate([266]):  # Loop over a subset of redshifts  
-    zz = redshift[np.where(step == istep)]
-    print 'Processing snapshot at redshift ',zz
-    nroot = halodir+'HaloCatalog/STEP'+str(istep)    
+# Paths to files
+zz = redshift[np.where(step == istep)]
+print('Processing snapshot at redshift={}'.format(zz))
+nroot = halodir+'HaloCatalog/STEP'+str(istep)    
 
-    # Initialize to 0 the halo mass functions
-    ycount, yh = [np.zeros(len(mhist)) for _ in range(2)]
+# Initialize to 0 the halo mass functions
+ycount, yh = [np.zeros(len(mhist)) for _ in range(2)]
 
-    # Loop over each of the sub volumes
-    infiles = glob.glob(nroot+'/*'+str(istep)+'.fofproperties#*')
-    for inf,infile in enumerate(infiles):
-        # Print out once the information stored in each file
-        if (iz == 0 and inf == 0):
-            print infile
-            gio.gio_inspect(infile)
-            print '----------------------------'
-        
-        # Read the number of particles per halo
-        in_count = mp*gio.gio_read(infile, "fof_halo_count")    
-        ind = np.where(in_count >0.)
-        count = np.log10(in_count[ind])    
-        H, bins_edges = np.histogram(count,bins=edges)
-        ycount = ycount + H
+# Loop over each of the sub volumes
+infiles = glob.glob(nroot+'/*'+str(istep)+'.fofproperties#*')
+for inf,infile in enumerate(infiles):
+    # Print out once the information stored in each file
+    if (iz == 0 and inf == 0):
+        gio.gio_inspect(infile)
+        print('----------------------------')
 
-        # FOF mass (Msun/h)
-        in_mh = gio.gio_read(infile, "fof_halo_mass")
-        ind = np.where(in_mh >0.) ; mh = np.log10(in_mh[ind])
-        H, bins_edges = np.histogram(mh,bins=edges)
-        yh = yh + H
+    # Read the number of particles per halo
+    in_count = mp*gio.gio_read(infile, "fof_halo_count")    
+    ind = np.where(in_count >0.)
+    count = np.log10(in_count[ind])    
+    H, bins_edges = np.histogram(count,bins=edges)
+    ycount = ycount + H
 
-        # Mean
-        H, bins_edges = np.histogram(mh,bins=edges,weights=mh)
-        xmean = xmean + H
+    # FOF mass (Msun/h)
+    in_mh = gio.gio_read(infile, "fof_halo_mass")
+    ind = np.where(in_mh >0.) ; mh = np.log10(in_mh[ind])
+    H, bins_edges = np.histogram(mh,bins=edges)
+    yh = yh + H
 
-        # Build up histograms for the calculation of the median
-        for i,ed in enumerate(edges[:-1]):
-            edmed = xbmed[i,:]
-            H, bins_edges = np.histogram(mh,bins=edmed)
-            ybmed[i,:] = ybmed[i,:] + H
+    # Mean
+    H, bins_edges = np.histogram(mh,bins=edges,weights=mh)
+    xmean = xmean + H
 
-        # Testing----------------------
-        #if inf>1:
-        #    break
-        #-----------------------------
-
-    xmean = xmean/yh
-    ycount = ycount/dm/(lbox**3)
-    yh = yh/dm/(lbox**3)
-
-    # Calculate the median mass of each HMF bin
+    # Build up histograms for the calculation of the median
     for i,ed in enumerate(edges[:-1]):
-        x = (xbmed[i,:-1]+xbmed[i,1:])/2.
-        y = ybmed[i,:]
-        mhmed[i] = percentiles(0.5,x,weights=y)
+        edmed = xbmed[i,:]
+        H, bins_edges = np.histogram(mh,bins=edmed)
+        ybmed[i,:] = ybmed[i,:] + H
 
-    # Write Halo Mass function to a file
-    tofile = zip(edges[:-1],edges[1:], ycount, mhmed, mhist, dm, xmean)
-    outfile = halodir+'hmf.txt'
-    #outfile = 'hmf.txt'
-    with open(outfile, 'w') as outf:
-        outf.write('# log10Mmin_bin log10Mmax_bin Nhalos/dm/vol log10Mmedian_bin (Mass bin mid point) dM log10Mmean_bin \n')
-        np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %6.4e %10.5f %10.5f %10.5f %10.5f'))      
-    outf.closed  
+    # Testing----------------------
+    #if inf>1:
+    #    break
+    #-----------------------------
 
-    # Plot for all redshifts
-    if makeplot:
-        ind = np.where(ycount >0.)
-        ax.plot(mhist[ind],np.log10(ycount[ind]),\
-                color=cols[iz],label='z='+str(zz))
+xmean = xmean/yh
+ycount = ycount/dm/(lbox**3)
+yh = yh/dm/(lbox**3)
 
-        ind = np.where(yh >0.)
-        ax.plot(mhist[ind],np.log10(yh[ind]),\
-                color=cols[len(cols)-iz-1],linestyle=':',label=' from mass')
+# Calculate the median mass of each HMF bin
+for i,ed in enumerate(edges[:-1]):
+    x = (xbmed[i,:-1]+xbmed[i,1:])/2.
+    y = ybmed[i,:]
+    mhmed[i] = percentiles(0.5,x,weights=y)
 
+# Write Halo Mass function to a file
+tofile = zip(edges[:-1],edges[1:], ycount, mhmed, mhist, dm, xmean)
+outfile = halodir+'hmfs/hmf_'+str(istep)+'.txt'
+#outfile = 'hmf.txt'
+with open(outfile, 'w') as outf:
+    outf.write('# log10Mmin_bin log10Mmax_bin Nhalos/dm/vol log10Mmedian_bin (Mass bin mid point) dM log10Mmean_bin \n')
+    np.savetxt(outf,tofile,fmt=('%10.5f %10.5f %6.4e %10.5f %10.5f %10.5f %10.5f'))      
+outf.closed  
+
+# Plot for this redshift
+if makeplot:
+    ind = np.where(ycount >0.)
+    ax.plot(mhist[ind],np.log10(ycount[ind]),\
+            color=cols[iz],label='z='+str(zz))
+
+    ind = np.where(yh >0.)
+    ax.plot(mhist[ind],np.log10(yh[ind]),\
+            color=cols[len(cols)-iz-1],linestyle=':',label=' from mass')
 
 # Directory with outputs (it'll be generated if it doesn't exist)
-outdir = '/users/'+getpass.getuser()+'/Outputs/out_shams/'
+outdir = halodir+'hmfs/plots/'
 if (not os.path.exists(outdir)): os.makedirs(outdir)
-print 'Output: ',outfile
-
+print('Output: {}'.format(outfile))
+    
 if makeplot:
     # Legend
     plt.legend(loc=3,prop={'size':(fs-2)}) 
     # Save figure
-    plotfile = outdir+'outerrim_hmf.pdf'
+    plotfile = outdir+'outerrim_hmf_'+str(istep)+'.pdf'
     fig.savefig(plotfile)
-    print 'Plot: ',plotfile
+    print('Plot: {}'.format(plotfile))
 

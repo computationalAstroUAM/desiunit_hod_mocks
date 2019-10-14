@@ -18,8 +18,8 @@ for ix in ${xx[@]} ; do
 	    name=bias_${ix}${iy}${iz}
 	    logname=${logpath}/${name}.%j.log
 
-	    cat << EOF - run.sh | sbatch
-#!/bin/bash
+	    job_file=${logpath}/${name}.job
+echo "#!/bin/bash
 #
 #SBATCH --nodes=1  
 #SBATCH --ntasks=1
@@ -28,17 +28,14 @@ for ix in ${xx[@]} ; do
 #SBATCH --job-name=${name}
 #SBATCH -o ${logname}  
 #SBATCH -D ${path2code}
-#SBATCH --export=ix=${ix},iy=${iy},iz=${iz},space=${space},code2run=${code2run}
 #
-#
-# Run script follows 
-EOF
+python $code2run $ix $iy $iz $space" > $job_file
 
-            #qsub run.sh -v space=$space,ix=$ix,iy=$iy,iz=$iz,code2run=$code2run
-            ## Testing
-            #qsub -I run.sh -v space=$space,ix=$ix,iy=$iy,iz=$iz,code2run=$code2run
+            sbatch $job_file
 
-	    sleep 5s
+	    rm $job_file
+
+	    #sleep 5s
 	done
     done
 done
