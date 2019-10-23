@@ -5,7 +5,8 @@ logpath=/mnt/lustre/gonzalev/Junk
 path2code=/users/gonzalev/eboss/mock_construction/hmf/
 code2run=mf.py
 
-steps=(266 300 279 253 241)
+#steps=(266 
+steps=(300 279 253 241)
 
 for step in ${steps[@]} ; do
     name=hmf_${step}
@@ -17,7 +18,7 @@ echo "#!/bin/bash
 #SBATCH --nodes=1  
 #SBATCH --ntasks=1
 #SBATCH --time=0-9:00:00
-#SBATCH -p sciama4.q
+#SBATCH -p himem.q
 #SBATCH --job-name=${name}
 #SBATCH -o ${logname}  
 #SBATCH -D ${path2code}
@@ -25,6 +26,7 @@ echo "#!/bin/bash
 python $code2run $step" > $job_file
 
     sbatch $job_file
+    sleep 5s
     rm $job_file
 done
 

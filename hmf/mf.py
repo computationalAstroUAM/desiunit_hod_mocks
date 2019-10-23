@@ -103,6 +103,7 @@ ycount, yh = [np.zeros(len(mhist)) for _ in range(2)]
 # Loop over each of the sub volumes
 infiles = glob.glob(nroot+'/*'+str(istep)+'.fofproperties#*')
 for inf,infile in enumerate(infiles):
+    print(infile) 
     # Print out once the information stored in each file
     if (iz == 0 and inf == 0):
         gio.gio_inspect(infile)
@@ -115,11 +116,15 @@ for inf,infile in enumerate(infiles):
     H, bins_edges = np.histogram(count,bins=edges)
     ycount = ycount + H
 
+    in_count = [] ; ind = [] # Flush arrays
+
     # FOF mass (Msun/h)
     in_mh = gio.gio_read(infile, "fof_halo_mass")
     ind = np.where(in_mh >0.) ; mh = np.log10(in_mh[ind])
     H, bins_edges = np.histogram(mh,bins=edges)
     yh = yh + H
+
+    in_mh = [] ; ind = [] # Flush arrays
 
     # Mean
     H, bins_edges = np.histogram(mh,bins=edges,weights=mh)
@@ -131,6 +136,7 @@ for inf,infile in enumerate(infiles):
         H, bins_edges = np.histogram(mh,bins=edmed)
         ybmed[i,:] = ybmed[i,:] + H
 
+    mh = []  # Flush array
     # Testing----------------------
     #if inf>1:
     #    break
