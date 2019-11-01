@@ -4,19 +4,21 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
+snap = '266'
+space = 'rspace' #'zspace'
+
 # Path to CUTE output and output plots
 ocat = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/biasf/'
 path2plot = ocat+'plots/'
 
 # Read the HMF mass bins
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
-mfile = halodir + 'hmf.txt'
+mfile = halodir + 'hmfs/hmf_'+snap+'.txt'
+
 mlow, mhigh = np.loadtxt(mfile, usecols= (0, 1), unpack=True)
 
-space = 'rspace' #'zspace'
-
 # Check CUTE output
-check_output = False 
+check_output = False
 if check_output:
 	for ix in range(3):
 		for iy in range(3):
@@ -26,12 +28,12 @@ if check_output:
 				for i, imlow in enumerate(mlow):
 					boxfile = ocat+space+'_full_'+namebox+'_'+str(imlow)+'.txt'
 					if (not os.path.exists(boxfile)):
-						print ('This output does not exist: '+boxfile)
+						print ('This output does not exist: {}'.format(boxfile))
 						continue
 					try: 
 						r, xi, err, dd = np.loadtxt(boxfile, unpack=True)
 					except:
-						print ('Problem reading r,xi,error,dd from: '+boxfile)
+						print ('Problem reading r,xi,error,dd from: {}'.format(boxfile))
 
 
 # Plot CUTE outpus
@@ -67,5 +69,5 @@ if doplots:
 		leg = plt.legend(loc=1)
 		leg.draw_frame(False)
 		fig.savefig(path2plot + plotname) ; plt.close()
-		print ('Ouput: ', path2plot + plotname)
+		print ('Ouput: {}{}'.format(path2plot,plotname))
 

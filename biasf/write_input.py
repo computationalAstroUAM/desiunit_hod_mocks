@@ -36,7 +36,7 @@ def writeScriptRun(runfile, paramfile, outdir):
 	f.close()
         return
 
-Testing = True
+Testing = False
 
 istep = 266 ; iz = 0.865
 #241 1.055

@@ -8,9 +8,9 @@ code2run=write_input.py
 
 space=rspace #zspace
 
-xx=(0) #(0 1 2)
-yy=(0) #(0 1 2)
-zz=(0) #(0 1 2)
+xx=(0 1 2)
+yy=(0 1 2)
+zz=(0 1 2)
 
 for ix in ${xx[@]} ; do
     for iy in ${yy[@]} ; do
@@ -35,7 +35,7 @@ python $code2run $ix $iy $iz $space" > $job_file
 
 	    rm $job_file
 
-	    #sleep 5s
+	    sleep 5s
 	done
     done
 done
