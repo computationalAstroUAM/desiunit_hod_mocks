@@ -6,6 +6,8 @@
 
 *meanxi_bias.py* to calculate the mean two point correlation function from all the boxes, for the statistical errors.
 
+*hmf_bias.py* Plot together the HMF+b(M)+b/b_fit
+
 *test_integration.py* to compare integration methods.
 
 -----

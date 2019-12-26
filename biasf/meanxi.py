@@ -13,7 +13,7 @@ def chi2(obs,model,err):
 space = 'rspace' #'zspace'
 snap = '266'
 
-weight = True
+weight = False # True if non-Poisson errors
 
 loglog = True
 plotmean = True
@@ -169,7 +169,7 @@ if plotmean:
 # and different separation ranges
 rmin = [8.,10.,20.]
 rmax = [70.,80.]
-abias = np.linspace(0.1,100.,10000)
+abias = np.linspace(0.1,10.,2000)
 chis = np.zeros((len(abias))) ; chis.fill(999.)
 
 mbias = np.zeros((len(rmin)*len(rmax),len(mlow))) ; mbias.fill(-999.)

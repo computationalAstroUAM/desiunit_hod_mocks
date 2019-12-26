@@ -5,8 +5,8 @@ logpath=/mnt/lustre/gonzalev/Junk
 path2code=/users/gonzalev/eboss/mock_construction/hmf/
 code2run=mf.py
 
-#steps=(266 
-steps=(300 279 253 241)
+steps=(266)
+#steps=(300 279 253 241)
 
 for step in ${steps[@]} ; do
     name=hmf_${step}
