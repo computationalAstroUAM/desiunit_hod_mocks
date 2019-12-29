@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+from matplotlib import gridspec
+import mpl_style
+plt.style.use(mpl_style.style1)
 
 def chi2(obs,model,err):
 	val = 0.
@@ -11,249 +14,84 @@ def chi2(obs,model,err):
 	return val
 
 space = 'rspace' #'zspace'
-snap = '266'
+istep = 266
 
-weight = True
+# Path to info
+halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
 
-loglog = True
-plotmean = True
-plotbias = True
-
-# Path to DM monopole
-fxidm = '/users/savila/CorrelationTools/xir/OuterRim_new.b1.00.z0.865.2PCF'
-rdm, xidm = np.loadtxt(fxidm ,unpack = True)
+# Get the conversion between the name of the time step and redshift                   
+step = np.genfromtxt(halodir+'step_redshift.txt',usecols=0,dtype=int)
+redshift = np.genfromtxt(halodir+'step_redshift.txt',usecols=1)
+zz = redshift[np.where(step == istep)][0]
 
 # Read the HMF mass bins
-halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
-mfile = halodir + 'hmfs/hmf_'+snap+'.txt'
-mlow, mhigh, mhmed = np.loadtxt(mfile, usecols= (0, 1, 3), unpack=True)
+mfile = halodir + 'hmfs/hmf_'+str(istep)+'.txt'
+mf, lmh = np.loadtxt(mfile, usecols= (2, 3), unpack=True)
 
-# Path to CUTE output and plots
-ocat = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/biasf/'
-path2plot = ocat+'plots/'
+# Read the bias
+mb, bias = np.loadtxt(halodir+'bias_rl20.0_rh80.0.txt', unpack = True)
+ibmax = 76
+print('Excluding the last {} points'.format(len(mb)-len(mb[:ibmax])))
 
-# Find number of separation bins and define matrices
-r0 = np.loadtxt(ocat+space+'_full_000_'+str(mlow[0])+'.txt', usecols=(0), unpack=True)
-mxi, exi = [np.zeros((len(mlow),len(r0))) for i in range(2)]
-if weight:
-	wsum = np.zeros((len(mlow),len(r0)))
+# Best polynomial fits
+p2 = np.poly1d(np.polyfit(mb[:ibmax], bias[:ibmax], 2))
+p3 = np.poly1d(np.polyfit(mb[:ibmax], bias[:ibmax], 3))
+p4 = np.poly1d(np.polyfit(mb[:ibmax], bias[:ibmax], 4))
+p5 = np.poly1d(np.polyfit(mb[:ibmax], bias[:ibmax], 5))
 
-# Get the mean two point correlation function at each mass bin
-for i, imlow in enumerate(mlow):
-	icount = 0
-	for ix in range(3):
-		for iy in range(3):
-			for iz in range(3):
-				namebox = str(ix)+str(iy)+str(iz)
-				boxfile = ocat+space+'_full_'+namebox+'_'+str(imlow)+'.txt'
+xp = np.linspace(np.min(lmh)-0.5,np.max(lmh)+0.5,100)
 
-				if (not os.path.isfile(boxfile)):
-					print('Not found {}'.format(boxfile)) ; sys.exit()
+# Figure http://matplotlib.org/users/gridspec.html
+fig = plt.figure(figsize=(7,9))
+gs = gridspec.GridSpec(7,1)
+gs.update(wspace=0., hspace=0.)
 
-				r, xi, err, dd = np.loadtxt(boxfile, usecols=(0,1,2, 3), unpack=True)
-				if (not (r==r0).all()):
-					print('{}: Different bins? {}, {}'.format(boxfile,r,r0)) ; sys.exit()
+# Ratio plot
+axr = plt.subplot(gs[6,0])
+axr.set_xlabel("${\\rm log}_{10}(M_{\\rm halo}/h^{-1}{\\rm M}_{\odot})$")
+axr.set_ylabel("$b/p_{k}$")
+axr.set_autoscale_on(False) ;  axr.minorticks_on()
+xmin = 10.5 ; xmax = 14.5
+axr.set_xlim(xmin,xmax) ; axr.set_ylim(0.8,1.2)
 
-				if weight:
-					xiclean = np.zeros(len(xi))
-					w = np.zeros(len(err))
-					# Account for bins with no pairs
-					ind = np.where((dd>1) & (np.absolute(err)>0.)) 
-					if(np.shape(ind)[1] > 0):
-						xiclean[ind] = xi[ind]
-						w[ind] = 1./(err[ind]**2) 
-					# Add values
-					mxi[i,:] = mxi[i,:] + np.multiply(xiclean,w)
-					wsum[i,:] = wsum[i,:] + w 
-				else:
-					mxi[i,:] = mxi[i,:] + xi
-					icount += 1
+axr.plot(mb,bias/bias,'k-')
+axr.plot(mb,bias/p2(mb),linestyle='-')
+axr.plot(mb,bias/p3(mb),linestyle='--')
+axr.plot(mb,bias/p4(mb),linestyle='-.')
+axr.plot(mb,bias/p5(mb),linestyle=':')
 
-	if weight:
-		ww = wsum[i,:]
-		ind = np.where(ww>0.)                                                                       
-		if(np.shape(ind)[1] > 0): 
-			mxi[i,ind] = mxi[i,ind]/ww[ind]
-			exi[i,ind] = np.sqrt(1./ww[ind])
-		# Account for bins with no pairs
-		ind = np.where(ww<=0.)
-		if(np.shape(ind)[1] > 0): 
-			mxi[i,ind] = -999.
-			exi[i,ind] = -999.
+# Bias plot
+axb = plt.subplot(gs[2:6,0],sharex=axr)
+plt.setp(axb.get_xticklabels(), visible=False)
+axb.set_autoscale_on(False) ;  axb.minorticks_on()
+axb.set_ylim(0.6,10.)
+axb.set_yscale('log')
+axb.set_ylabel("$b(20\leq r/h^{-1}{\\rm Mpc} \leq 80)$")
 
-	else:
-		mxi[i,:] = mxi[i,:]/icount
+axb.plot(mb,bias,'ko',label='Haloes')
+axb.plot(xp,p2(xp),label='p_2',linestyle='-')
+axb.plot(xp,p3(xp),label='p_3',linestyle='--')
+axb.plot(xp,p4(xp),label='p_4',linestyle='-.')
+axb.plot(xp,p5(xp),label='p_5',linestyle=':')
 
-if not weight:
-	nbox = icount
-	# Calculate the standard error
-	for i, imlow in enumerate(mlow):
-		for ix in range(3):
-			for iy in range(3):
-				for iz in range(3):
-					namebox = str(ix)+str(iy)+str(iz)
-					boxfile = ocat+space+'_full_'+namebox+'_'+str(imlow)+'.txt'
+leg = axb.legend(loc=2)
+leg.draw_frame(False)
 
-					r, xi = np.loadtxt(boxfile, usecols=(0,1), unpack=True)
+# HMF
+axh = plt.subplot(gs[0:2,0],sharex=axb)
+plt.setp(axh.get_xticklabels(), visible=False)
+axh.set_autoscale_on(False) ;  axh.minorticks_on()
+ymin = 0.0000002 ; ymax = 1.
+axh.set_ylim(ymin, ymax)
+axh.set_yscale('log')
+axh.set_ylabel("$\Phi/h^3{\\rm Mpc}^{-3}{\\rm dlog}_{10}^{-1}M)$")
+axh.annotate('z='+str(zz),xy=(13.7,0.1))
 
-					exi[i,:] = exi[i,:] + (xi - mxi[i,:])**2
-		exi[i,:] = np.sqrt(exi[i,:]/(nbox*nbox-nbox))
+ind = np.where(mf >0.)
+axh.plot(lmh[ind],mf[ind],'k-')
 
 
-# Plot averaged monopole with errors for each mass bin
-if plotmean:
-	fig = plt.figure(figsize = (8., 9.))
-	ax = fig.add_subplot(111)
-	cm = plt.get_cmap('YlGnBu')
-	cols = plt.cm.Spectral(np.linspace(0,1,len(mlow)))
-	ax.set_prop_cycle('color',cols)
-
-	if loglog:
-		xtit = '${\\rm log_{10}(r /h^{-1}\\rm{Mpc})}$'
-		ytit = '${\\rm log_{10}\\xi(r)}$'
-		xmin=-1. ; xmax=2.25 ; ymin=-3.5 ; ymax=2.
-	else:
-		xtit = '${\\rm r /h^{-1}\\rm{Mpc}}$'
-		ytit = '${\\rm r^{2}\\xi(r)}$'
-		xmin=-5 ; xmax=200. ; ymin=-10. ; ymax=100
-	plt.xlabel(xtit) ; plt.ylabel(ytit)
-	plt.xlim(xmin,xmax) ; plt.ylim(ymin,ymax)
-
-	for i, imlow in enumerate(mlow):
-		yy1 = mxi[i,:] ; err1 = exi[i,:]
-		leg = '['+str(imlow)+','+str(mhigh[i])+')'
-		#'$\leq M_{\\rm halo}(h^{-1}\\rm{M_{\odot}})<$'+\
-
-		if loglog:
-			ind = np.where(yy1>0)
-			xx = np.log10(r0[ind])
-			yy = np.log10(yy1[ind])
-
-			low = np.log10(yy1[ind]+err1[ind]) - yy
-			high = yy - np.log10(yy1[ind]-err1[ind])
-		else:
-			ind = np.where(yy1>-999.)
-			xx = r0[ind]
-			yy = yy1[ind]*r0[ind]*r0[ind]
-			low = r0[ind]*r0[ind]*err1[ind]
-			high = r0[ind]*r0[ind]*err1[ind]
-
-		ax.errorbar(xx, yy, yerr=[low,high], label=leg)
-
-	leg = ax.legend(loc=1, handlelength=0, handletextpad=0)
-	for item in leg.legendHandles:
-		item.set_visible(False)
-	for color,text in zip(cols,leg.get_texts()):
-		text.set_color(color)
-		leg.draw_frame(False)
-
-	#Plot DM
-	ind = np.where(xidm>0.)
-	if loglog:
-		ind = np.where(xidm>0)
-		xx = np.log10(rdm[ind])
-		yy = np.log10(xidm[ind])
-	else:
-		xx = rdm
-		yy = xidm*rdm*rdm
-	ax.plot(xx,yy,color='k')
-	ax.text(xmin+0.05*(xmax-xmin),ymin+0.05*(ymax-ymin), 'DM')
-
-	# Save fig
-	plotname = 'mean2PCF.png'
-	fig.savefig(path2plot + plotname)
-	print ('Ouput: {}{}'.format(path2plot,plotname))
-
-##############################################
-# Calculate the bias in different mass ranges
-# and different separation ranges
-rmin = [8.,10.,20.]
-rmax = [70.,80.]
-abias = np.linspace(0.1,100.,10000)
-chis = np.zeros((len(abias))) ; chis.fill(999.)
-
-mbias = np.zeros((len(rmin)*len(rmax),len(mlow))) ; mbias.fill(-999.)
-diff = np.zeros((len(rmin)*len(rmax)))
-rlrh_name = []
-
-icount = -1
-for rl in rmin:
-	for rh in rmax:
-		icount += 1
-		rlrh_name = np.append(rlrh_name,'rl'+str(rl)+'_rh'+str(rh))
-
-		rind = np.where((r0>=rl) & (r0<=rh))
-		rr1 = r0[rind]
-
-		# Plot bias
-		if plotbias:
-			fig = plt.figure(figsize = (8., 9.))
-			ax = fig.add_subplot(111)
-			cm = plt.get_cmap('summer')
-			cols = plt.cm.Spectral(np.linspace(0,1,len(mlow)))
-			#ax.set_prop_cycle('color',cols)
-			xtit = '${\\rm r (h^{-1}\\rm{Mpc})}$'
-			ytit = '${\\rm \sqrt{\\xi_{hh}/\\xi_{DM}}}$'
-			xmin=min(rmin) ; xmax=max(rmax) ; ymin=0.5 ; ymax=6.5
-			plt.xlabel(xtit) ; plt.ylabel(ytit)
-			plt.xlim(xmin,xmax) ; plt.ylim(ymin,ymax)
-
-		idiff = 0
-		for i, imlow in enumerate(mlow):
-			oxi2 = mxi[i,:] ; oerr2=exi[i,:]
-			oxi1 = oxi2[rind] ; oerr1 = oerr2[rind]
-			ind = np.where((oxi1 > -999.) & (oerr1 > -999.))
-			if(np.shape(ind)[1] > 1):
-				rr = rr1[ind]
-				oxi = oxi1[ind] ; oerr = oerr1[ind]
-			else:
-				continue
-
-			dm = np.interp(rr, rdm, xidm)
-			for ib,bb in enumerate(abias):
-				dmh = bb*bb*dm
-				chis[ib] = chi2(oxi,dmh,oerr)
-
-			ib = np.where(chis == np.nanmin(chis))
-			bias = abias[ib][0]
-			mbias[icount,i] = bias
-
-			bb = np.sqrt(oxi/dm)
-			ebb= oerr/(2*bb)
-			mbb = np.zeros(len(bb)) ; mbb.fill(bias)
-			idiff = idiff + chi2(bb,mbb,ebb)
-
-			if plotbias:
-				leg = '['+str(imlow)+','+str(mhigh[i])+')'
-				ax.errorbar(rr, bb, ebb, label=leg, color=cols[i])
-				ax.plot([xmin,xmax],[bias,bias], \
-						linestyle='--',color=cols[i])
-
-		diff[icount] = idiff
-
-		if plotbias:
-			leg = ax.legend(loc=1, handlelength=0, handletextpad=0)
-			for item in leg.legendHandles:
-				item.set_visible(False)
-			for color,text in zip(cols,leg.get_texts()):
-				text.set_color(color)
-				leg.draw_frame(False)
-
-
-			# Save fig
-			plotname = 'bias_'+rlrh_name[icount]+'.png'
-			fig.savefig(path2plot + plotname)
-			print ('Ouput: {}{}'.format(path2plot,plotname))
-
-# Write out the bias function measured within
-# the separation range best fitted by a constant bias.
-ind = np.where(diff == np.nanmin(diff))
-
-bb = np.squeeze(mbias[ind,:]) # Remove single-dimensional entries
-tofile = zip(mhmed,bb)
-
-bfile = halodir + 'bias_'+rlrh_name[icount]+'.txt'
-with open(bfile,'w') as outf:
-	np.savetxt(outf,tofile,fmt=('%10.5f %10.5f'))
-	outf.closed
-print ('Bias function in: {}'.format(bfile))
+# Save figure
+plotfile = halodir + 'plots/hmf_bias_'+str(istep)+'.pdf'
+fig.savefig(plotfile)
+print 'Output: ',plotfile
