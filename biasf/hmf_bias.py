@@ -51,7 +51,7 @@ axr = plt.subplot(gs[6,0])
 axr.set_xlabel("${\\rm log}_{10}(M_{\\rm halo}/h^{-1}{\\rm M}_{\odot})$")
 axr.set_ylabel("$b/p_{k}$")
 axr.set_autoscale_on(False) ;  axr.minorticks_on()
-xmin = 10.5 ; xmax = 14.5
+xmin = 10.5 ; xmax = 14.4
 axr.set_xlim(xmin,xmax) ; axr.set_ylim(0.8,1.2)
 
 axr.plot(mb,bias/bias,'k-')
@@ -69,10 +69,10 @@ axb.set_yscale('log')
 axb.set_ylabel("$b(20\leq r/h^{-1}{\\rm Mpc} \leq 80)$")
 
 axb.plot(mb,bias,'ko',label='Haloes')
-axb.plot(xp,p2(xp),label='p_2',linestyle='-')
-axb.plot(xp,p3(xp),label='p_3',linestyle='--')
-axb.plot(xp,p4(xp),label='p_4',linestyle='-.')
-axb.plot(xp,p5(xp),label='p_5',linestyle=':')
+axb.plot(xp,p2(xp),label='$p_2$',linestyle='-')
+axb.plot(xp,p3(xp),label='$p_3$',linestyle='--')
+axb.plot(xp,p4(xp),label='$p_4$',linestyle='-.')
+axb.plot(xp,p5(xp),label='$p_5$',linestyle=':')
 
 leg = axb.legend(loc=2)
 leg.draw_frame(False)
