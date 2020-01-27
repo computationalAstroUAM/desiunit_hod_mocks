@@ -7,7 +7,7 @@ logpath=/mnt/lustre/gonzalev/Junk
 
 path2code=/users/gonzalev/eboss/mock_construction/mocks_props/dprop/
 
-code2run=test.py #dprop.py
+code2run=dprop.py
 
 typemock=NFW #NFW; part
 
@@ -39,7 +39,7 @@ for ix in ${xx[@]} ; do
 #SBATCH --nodes=1  
 #SBATCH --ntasks=1
 #SBATCH --time=0-9:00:00
-#SBATCH -p sciama4-12.q
+#SBATCH -p sciama2.q
 #SBATCH --job-name=${name}
 #SBATCH -o ${logname}  
 #SBATCH -D ${path2code}
