@@ -9,11 +9,11 @@ from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-Testing = True
+Testing = False
 
 istep = 266
 
-typemock=['NFW'] #,'part']
+typemock=['NFW','part']
 lsty=['-',':']
 
 xboxs = ['0','1','2']
@@ -24,18 +24,16 @@ if (Testing):
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Bins in distance (Mpc/h)
-nmin = 0.5 ; nmax = 10.5 ; dn = 1
-nbins = np.arange(nmin,nmax,dn)
-nhist1 = nbins +dn*0.5
-tmp = np.insert(nhist1,0,0)
-nhist = np.asarray(tmp,dtype=int)
+rmin = 0.01 ; rmax = 10. ; dr = 0.1
+rbins = np.arange(rmin,rmax,dr)
+rhist = rbins +dr*0.5
 
 # Figure 
 fig = plt.figure()
-xtit = "Number of Satellites"
-ytit = "$P(N)$"
-xmin = 0. ; xmax = nmax
-ymin = 0. ; ymax = 1.
+xtit = "$r\,h^{-1}{\\rm Mpc}$"
+ytit = "${\\rm log}_{10}(N_{\\rm sat})$"
+xmin = 0. ; xmax = rmax
+ymin = 0. ; ymax = 5.
 
 ax = fig.add_subplot(111)
 ax.set_xlim(xmin,xmax) #; ax.set_ylim(ymin,ymax)
@@ -51,7 +49,7 @@ for tmock in typemock:
 cols = get_distinct(colmax)
 
 # Loop over mocks and boxes
-minn = 999. ; maxn = -999.
+minr = 999. ; maxr = -999.
 for itm, tmock in enumerate(typemock):
 	# Path to mocks
 	mockdir = '/mnt/lustre/savila/HOD_'+tmock+'/output_V1/' 
@@ -61,14 +59,10 @@ for itm, tmock in enumerate(typemock):
 		mocks = [line.strip() for line in ff]
 
 	for im, mock in enumerate(mocks):
-		beta1 = mock.split('beta')[1]
-		beta = 'beta='+beta1.split('_')[0]
-		if (beta1.split('_')[0] == '0.000'):
-			beta = 'Poisson'
-		elif (beta1.split('_')[0] == '-2.000'):
-			beta = 'Next integer'
+		kval1 = mock.split('K')[1]
+		kval = kval1.split('_')[0]
 
-		pnsat = np.zeros(shape=(len(nbins)))
+		nsatr = np.zeros(shape=(len(rbins)))
 		for xbox in xboxs:
 			for ybox in yboxs:
 				for zbox in zboxs:
@@ -83,63 +77,39 @@ for itm, tmock in enumerate(typemock):
 					# x 0, y 1,z 2(Mpc/h), vx 3, vy 4, vz 5(comoving peculiar in km/s), 
 					# lmass 6(np.log10(fof_halo_mass)), cen 7(-1=sat, 0=cen), 
 					# dvx 8, dvy 9, dvz 10, dx 11, dy 12, dz 13, tag 14(fof_halo_tag)  
-					ltags = [] ; lstag = [] ; lnsat = []
+					ldx = [] ; ldy = [] ; ldz = []
 					with open(mockfile, 'rb') as ff:
 						for line in ff:
-							if (len(line.strip().split()) == 9):
-								itag = 8
-							elif (len(line.strip().split()) == 15):
-								itag = 14
-							else:
-								print('STOP: unknown file set-up') ; sys.exit()
-
-							thistag = int(line.strip().split()[itag])
-							ltags.append(thistag)
-
 							cen = int(line.strip().split()[7])
 							if (cen<0):
-								if (thistag in lstag):
-									lnsat[lstag.index(thistag)] += 1
-								else:
-									lstag.append(thistag)
-									lnsat.append(1)
+								ldx.append(float(line.strip().split()[11]))
+								ldy.append(float(line.strip().split()[12]))
+								ldz.append(float(line.strip().split()[13]))
+					dx = np.asarray(ldx,dtype=float)
+					dy = np.asarray(ldy,dtype=float)
+					dz = np.asarray(ldz,dtype=float)
+					ldx = [] ; ldy = [] ; ldz = []
 
-					tags = np.unique(np.asarray(ltags,dtype=int))
-					stag = np.asarray(lstag,dtype=int)
-					nsat = np.asarray(lnsat,dtype=int)
-					ltags = [] ; lstag = [] ; lnsat = []
+					# Get r in kpc/h for satellite galaxies
+					rsat = np.sqrt(dx*dx + dy*dy + dz*dz)
+					if(np.min(rsat)<minr) : minr = np.min(rsat)
+					if(np.max(rsat)>maxr) : maxr = np.max(rsat)
 
-					# Check that stag contains unique values
-					if (len(tags)<len(stag)):
-						print('STOP: number tags={}, n sat.={}'.format(
-							len(tags),len(stag)))
-						sys.exit()
-					else:
-						a = np.unique(stag)
-						if (len(a) != len(stag)):
-							print('STOP: problem with satellite tags')
-							sys.exit()
-					
 					# Histogram
-					H, bin_edges = np.histogram(nsat, bins=np.append(nbins,nmax))
-					pnsat = pnsat + H
-					print('    Nmin={:.2f}, Nmax={:.2f}'.format(np.min(nsat),np.max(nsat)))
+					H, bin_edges = np.histogram(rsat, bins=np.append(rbins,rmax))
+					nsatr = nsatr + H
+					print('    Nmin={:.2f}, Nmax={:.2f}'.format(np.min(nsatr),np.max(nsatr)))
 
-		tmp = np.insert(pnsat,0,len(tags)-len(stag))
-		pnsat = tmp
-		intpn = np.sum(pnsat)*dn
-
-		pn = pnsat/intpn
-		ax.plot(nhist,pn,label=tmock+', '+beta,
+		ax.plot(rhist,np.log10(nsatr),label=tmock+', K='+kval,
 				linestyle=lsty[itm],color=cols[im])
 
-print('    Nmin={}, Nmax={}'.format(minn,maxn))
+print('    Rmin={:.2f}, Rmax={:.2f} Mpc'.format(minr,maxr))
 
 # Legend
 leg = ax.legend(loc=1)
 leg.draw_frame(False)
 
 # Save figure
-plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_'+str(istep)+'.png'
+plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_r_'+str(istep)+'.png'
 fig.savefig(plotfile)
 print 'Output: ',plotfile

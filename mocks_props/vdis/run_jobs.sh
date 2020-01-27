@@ -1,14 +1,14 @@
 #!/bin/bash
 
-sciama=false
+sciama=true
 
 logpath=/mnt/lustre/gonzalev/Junk
 
-path2code=/users/gonzalev/eboss/mock_construction/mocks_props/prob_sat/
+path2code=/users/gonzalev/eboss/mock_construction/mocks_props/nsat_r/
 
-code2run=prob_sat.py
+code2run=nsat_r.py
 
-name=psat
+name=nsat
 logname=${logpath}/${name}.%j.log
 
 if ! $sciama ;then
