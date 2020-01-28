@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sciama=false
+sciama=true
 
 logpath=/mnt/lustre/gonzalev/Junk
 
@@ -19,7 +19,7 @@ else
 #
 #SBATCH --nodes=1  
 #SBATCH --ntasks=1
-#SBATCH --time=0-9:00:00
+#SBATCH --time=48:00:00
 #SBATCH -p sciama4.q
 #SBATCH --job-name=${name}
 #SBATCH -o ${logname}  
