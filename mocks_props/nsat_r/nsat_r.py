@@ -24,14 +24,14 @@ if (Testing):
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Bins in distance (Mpc/h)
-rmin = 0.01 ; rmax = 10. ; dr = 0.1
+rmin = 0.01 ; rmax = 5. ; dr = 0.1
 rbins = np.arange(rmin,rmax,dr)
 rhist = rbins +dr*0.5
 
 # Figure 
 fig = plt.figure()
 xtit = "$r\,h^{-1}{\\rm Mpc}$"
-ytit = "${\\rm log}_{10}(N_{\\rm sat})$"
+ytit = "${\\rm log}_{10}(N_{\\rm sat}/N_{\\rm sat, max})$"
 xmin = 0. ; xmax = rmax
 ymin = 0. ; ymax = 5.
 
@@ -100,7 +100,9 @@ for itm, tmock in enumerate(typemock):
 					nsatr = nsatr + H
 					print('    Nmin={:.2f}, Nmax={:.2f}'.format(np.min(nsatr),np.max(nsatr)))
 
-		ax.plot(rhist,np.log10(nsatr),label=tmock+', K='+kval,
+		ymax = np.max(nsatr)
+		ind = np.where(nsatr>0)
+		ax.plot(rhist[ind],np.log10(nsatr[ind]/ymax),label=tmock+', K='+kval,
 				linestyle=lsty[itm],color=cols[im])
 
 print('    Rmin={:.2f}, Rmax={:.2f} Mpc'.format(minr,maxr))

@@ -4,11 +4,13 @@ sciama=true
 
 logpath=/mnt/lustre/gonzalev/Junk
 
-path2code=/users/gonzalev/eboss/mock_construction/mocks_props/nsat_r/
+path2code=/users/gonzalev/eboss/mock_construction/mocks_props/vdis/
 
-code2run=nsat_r.py
+#code2run=r_vdis.py
+#code2run=theta_vdis.py
+code2run=phi_vdis.py
 
-name=nsat
+name=vdis
 logname=${logpath}/${name}.%j.log
 
 if ! $sciama ;then
