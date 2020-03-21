@@ -13,7 +13,7 @@ Testing = False
 
 istep = 266
 
-typemock=['NFW1'] #,'part']
+typemock=['NFW','part']
 lsty=['-',':']
 
 xboxs = ['0','1','2']
@@ -21,19 +21,19 @@ yboxs = ['0','1','2']
 zboxs = ['0','1','2']
 
 if (Testing):
-	typemock = ['NFW1']
+	typemock = ['part']
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Bins in distance (Mpc/h)
-nmin = 0.5 ; nmax = 50. ; dn = 1
+nmin = 0.5 ; nmax = 50.5 ; dn = 1
 nbins = np.arange(nmin,nmax,dn)
 nhist = nbins +dn*0.5
 
 # Figure 
 fig = plt.figure()
 xtit = "Number of Satellites"
-ytit = "Probability density (arbitrary units)"
-xmin = 0.9 ; xmax = 5.1
+ytit = "$N_{\\rm sat}/N_{\\rm sat,max}$"
+xmin = 0. ; xmax = 5.
 
 ax = fig.add_subplot(111)
 ax.set_xlim(xmin,xmax) 
@@ -60,9 +60,6 @@ for itm, tmock in enumerate(typemock):
 	with open(tmock+'_mocks.txt', 'r') as ff:
 		mocks = [line.strip() for line in ff]
 
-	if ('1' in tmock):
-		tmock = tmock.split('1')[0] 
-
 	for im, mock1 in enumerate(mocks):
 		mock2 = mock1.split('/')[-1]
 		mock = mock2.replace('galaxies','nsat')
@@ -72,27 +69,19 @@ for itm, tmock in enumerate(typemock):
 		beta = 'beta='+beta1.split('_')[0] 
 		if (beta1.split('_')[0] == '0.000'):
 			beta = 'Poisson'
-			lstyle = lsty[itm]
 		elif (beta1.split('_')[0] == '-2.000'):
 			beta = 'Next integer'
-			lstyle = lsty[itm]
-		else:
-			lstyle = '--'
 
 		pnsat = np.zeros(shape=(len(nhist)))
 		for xbox in xboxs:
 			for ybox in yboxs:
 				for zbox in zboxs:
-					ibox = xbox+ybox+zbox ; print('Box: {}'.format(ibox))
+					ibox = xbox+ybox+zbox #; print('Box: {}'.format(ibox))
 
 					# Change the mock names to the box we are working with
 					imock = mock.replace('mock000','mock'+ibox)
 					mockfile = nsatpath+tmock+'/'+imock
-					file_fine = check_file(mockfile) 
-					if (not file_fine):
-						print('Moving on, file not found {}'.format(mockfile))
-						break
-					#print('Mockfile: {}'.format(mockfile))
+					check_file(mockfile) #; print('Mockfile: {}'.format(mockfile))
 
 					# Read the catalogue with number of satellites
 					# tag 0, nsat 1
@@ -113,7 +102,7 @@ for itm, tmock in enumerate(typemock):
 
 		print('    Nmax={}'.format(maxn))
 		intpn = np.sum(pnsat)*dn
-		pn = pnsat/intpn
+		pn = pnsat/np.max(pnsat) #/intpn
 		# Lines plot
 		#ax.plot(nhist,pn,label=tmock+', '+beta,
 		#		linestyle=lsty[itm],color=cols[im])
@@ -123,14 +112,13 @@ for itm, tmock in enumerate(typemock):
 		tmp = np.insert(nhist,0,nhist[0]-1)
 		xx = np.asarray(tmp,dtype=float) + 0.5
 		ax.step(xx,yy,label=tmock+', '+beta,
-				linestyle=lstyle,color=cols[im])
+				linestyle=lsty[itm],color=cols[im])
 
 # Legend
 leg = ax.legend(loc=1)
 leg.draw_frame(False)
 
 # Save figure
-#plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_'+str(istep)+'.png'
-plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_bestfit_'+str(istep)+'.png'
+plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/tests/nsat_max_'+str(istep)+'.png'
 fig.savefig(plotfile)
 print 'Output: ',plotfile

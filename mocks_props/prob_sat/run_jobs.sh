@@ -6,7 +6,9 @@ logpath=/mnt/lustre/gonzalev/Junk
 
 path2code=/users/gonzalev/eboss/mock_construction/mocks_props/prob_sat/
 
-code2run=prob_sat.py
+#code2run=prob_sat.py
+code2run=plot_sprob.py
+#code2run=test_plot.py
 
 name=psat
 logname=${logpath}/${name}.%j.log

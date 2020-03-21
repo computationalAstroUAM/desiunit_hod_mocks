@@ -1,19 +1,19 @@
 import sys,os
+
 import numpy as np
 from iotools import check_file
 
 Testing = False
-
 istep = 266
 
-typemock=['NFW','part']
+typemock=['NFW1'] #typemock=['NFW','part']
 
 xboxs = ['0','1','2']
 yboxs = ['0','1','2']
 zboxs = ['0','1','2']
 
 if (Testing):
-	typemock=['part']
+	typemock=['NFW1'] #; typemock=['part']
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Output path
@@ -24,6 +24,9 @@ maxn = -999.
 for itm, tmock in enumerate(typemock):
 	with open(tmock+'_mocks.txt', 'r') as ff:
 		mocks = [line.strip() for line in ff]		
+		
+	if ('1' in tmock):
+		tmock = tmock.split('1')[0]
 
 	for im, mock in enumerate(mocks):
 		print('Mock: {}'.format(mock)) 
@@ -36,13 +39,16 @@ for itm, tmock in enumerate(typemock):
 
 					# Change the mock names to the box we are working with
 					mockfile = mock.replace('mock000','mock'+ibox)
-					check_file(mockfile) #; print('Mockfile: {}'.format(mockfile))
+					file_fine = check_file(mockfile) 
+					if (not file_fine): 
+						print('Moving on, file not found {}'.format(mockfile))
+						break
 
 					# Output file
 					imock = mockfile.split('/')[-1]
 					outfile = outpath+tmock+'/'+imock.replace('galaxies','nsat')
 
-					# Read mock catalogue (with or without d*
+					# Find out if catalogue has 9 or 15 columns
 					# x 0, y 1,z 2(Mpc/h), vx 3, vy 4, vz 5(comoving peculiar in km/s), 
 					# lmass 6(np.log10(fof_halo_mass)), cen 7(-1=sat, 0=cen), 
 					# dvx 8, dvy 9, dvz 10, dx 11, dy 12, dz 13, tag 14(fof_halo_tag)  
@@ -54,7 +60,9 @@ for itm, tmock in enumerate(typemock):
 							itag = 14
 						else:
 							print('STOP: unknown file set-up') ; sys.exit()
+					print('tag in column {}, mockfile: {}'.format(itag,mockfile))
 
+					# Read mock catalogue
 					ltags = [] ; lstag = []
 					with open(mockfile, 'rb') as ff:
 						for line in ff:
@@ -99,8 +107,7 @@ for itm, tmock in enumerate(typemock):
 									break
 						else:
 							sys.exit('STOP: Not properly coded the finding nsat!')
-							
-
+				
 					# Write Output
 					tofile = zip(tags,nsat)
 					with open(outfile, 'w') as outf:

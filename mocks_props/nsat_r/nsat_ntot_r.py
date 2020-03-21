@@ -24,19 +24,19 @@ if (Testing):
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Bins in distance (Mpc/h)
-rmin = 0.01 ; rmax = 5. ; dr = 0.05
+rmin = -3 ; rmax = 2. ; dr = 0.05
 rbins = np.arange(rmin,rmax,dr)
 rhist = rbins +dr*0.5
 
 # Figure 
 fig = plt.figure()
 xtit = "${\\rm log}_{10}(r\,h^{-1}{\\rm Mpc})$"
-ytit = "${\\rm log}_{10}(N_{\\rm sat}/N_{\\rm sat, max})$"
-xmin = 0. ; xmax = 3.
-ymin = -3. ; ymax = 0.2
+ytit = "${\\rm log}_{10}(N_{\\rm sat,dex}/N_{\\rm sat, tot})$"
+xmin = -2 ; xmax = 0.7
+ymin = -5 ; ymax = -0.4
 
 ax = fig.add_subplot(111)
-#ax.set_xlim(xmin,xmax) #; ax.set_ylim(ymin,ymax)
+ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 
 # Count mocks to set colour
@@ -56,7 +56,7 @@ for itm, tmock in enumerate(typemock):
 		mocks = [line.strip() for line in ff]
 
 	for im, mock in enumerate(mocks):
-		avgr = 0.
+		avgr = 0. ; ntot = 0.
 		kval1 = mock.split('K')[1]
 		kval = kval1.split('_')[0]
 
@@ -89,34 +89,44 @@ for itm, tmock in enumerate(typemock):
 
 					# Get r in kpc/h for satellite galaxies
 					rsat = np.sqrt(dx*dx + dy*dy + dz*dz)
-					if(np.min(rsat)<minr) : minr = np.min(rsat)
-					if(np.max(rsat)>maxr) : maxr = np.max(rsat)
+
+					# Average r
+					avgr = avgr + np.sum(rsat)
+					ntot = ntot + len(rsat)
+
+					# Limits of logr
+					ind = np.where(rsat>0.)
+					lrsat = np.log10(rsat[ind])
+					if(np.min(lrsat)<minr) : minr = np.min(lrsat)
+					if(np.max(lrsat)>maxr) : maxr = np.max(lrsat)
 
 					# Histogram
-					H, bin_edges = np.histogram(rsat, bins=np.append(rbins,rmax))
+					H, bin_edges = np.histogram(lrsat, bins=np.append(rbins,rmax))
 					nsatr = nsatr + H
 					print('    Nmin={:.2f}, Nmax={:.2f}'.format(np.min(nsatr),np.max(nsatr)))
 
-					# Average r
-					avgr = avgr + np.sum(rsat)/float(len(rsat))
-
-		ymax = np.max(nsatr)
+		ytot = np.sum(nsatr)
 		ind = np.where(nsatr>0)
-		ax.plot(np.log10(rhist[ind]),np.log10(nsatr[ind]/ymax),label=tmock+', K='+kval,
-				linestyle=lsty[itm],color=cols[im])
+		ax.plot(rhist[ind],np.log10(nsatr[ind]/ytot),label=tmock+', K='+kval,
+				linestyle=lsty[itm],color=cols[im]) 
 		#ax.plot(np.log10(rhist[ind]),nsatr[ind]/ymax,label=tmock+', K='+kval,
 		#		linestyle=lsty[itm],color=cols[im]) #lineal 
-		dy = 0.2*(ymax-ymin)
-		ax.arrow(np.log10(avgr),ymin+dy,0,dy)
+
+		# Arrows/lines to show the median values
+		dy = 0.05*(ymax-ymin) 
+		avgr = avgr/ntot
+		ax.arrow(np.log10(avgr),ymax-dy,0,dy,color=cols[im],ls=lsty[itm],
+				 length_includes_head=True,
+				 head_width=dy*0.1, head_length=dy*0.3)
 
 print('    Rmin={:.2f}, Rmax={:.2f} Mpc'.format(minr,maxr))
 
 # Legend
-leg = ax.legend(loc=3)
+leg = ax.legend(loc=0)
 leg.draw_frame(False)
 
 # Save figure
-plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_r_'+str(istep)+'.png'
-#plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/lin_nsat_r_'+str(istep)+'.png'
+#plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_r_'+str(istep)+'.png'
+plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_ntot_r_'+str(istep)+'.png'
 fig.savefig(plotfile)
 print 'Output: ',plotfile

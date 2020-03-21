@@ -6,7 +6,9 @@ logpath=/mnt/lustre/gonzalev/Junk
 
 path2code=/users/gonzalev/eboss/mock_construction/mocks_props/nsat_r/
 
-code2run=nsat_r.py
+#code2run=nsat_r.py
+#code2run=nsat_ntot_r.py
+code2run=nsat_ntot_linr.py
 
 name=nsat
 logname=${logpath}/${name}.%j.log

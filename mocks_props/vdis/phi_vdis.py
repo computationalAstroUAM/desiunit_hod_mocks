@@ -10,7 +10,9 @@ import mpl_style
 plt.style.use(mpl_style.style1)
 
 Testing = False
+
 istep = 266
+redshift = 0.865
 
 typemock=['NFW','part']
 lsty=['-',':']
@@ -23,15 +25,15 @@ if (Testing):
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Bins in distance (Mpc/h)
-vmin = -4000. ; vmax = -vmin ; dv = 50.
+vmin = -3000. ; vmax = -vmin ; dv = 20.
 vbins = np.arange(vmin,vmax,dv)
 vhist = vbins +dv*0.5 #; print(len(vhist)) ; sys.exit() 
 
 # Figure 
 fig = plt.figure()
-xtit = "$v_{\phi}({\\rm km/s})$"
+xtit = "$v_{phi}({\\rm km/s})$"
 ytit = "$P_v$"
-xmin = -3000. ; xmax = -xmin
+xmin = -1500. ; xmax = -xmin
 ymin = -4.5 ; ymax = 0.
 
 ax = fig.add_subplot(111)
@@ -39,30 +41,30 @@ ax.set_xlim(xmin,xmax) #; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 
 # Count mocks to set colour
-colmax = 0 ; count = 0
+colmax = 0 
 for tmock in typemock:
-	with open(tmock+'_mocks.txt', 'r') as ff:
-		for line in ff: count += 1
-if((count % 2)!= 0):
+	count = 0
+	with open(tmock+'_mocks.txt','r') as ff:
+		for line in ff: count +=1
+	if(count>colmax): colmax = count
+if((colmax % 2)!= 0):
 	print('STOP: odd number of catalogues')
 	sys.exit()
 else:
-	colmax = count/2
+	colmax = colmax/2 #taken into account mocks with vinfall
 cols = get_distinct(colmax)
 
 # Loop over mocks and boxes
-minv = 999. ; maxv = -999. ; count = 0
+minv = 999. ; maxv = -999.
 plot_lines = [] ; plot_colors = [] ; inlegs = [] ; alphas = []
 for itm, tmock in enumerate(typemock):
-	# Path to mocks
-	mockdir = '/mnt/lustre/savila/HOD_'+tmock+'/output_V1/' 
-
 	# Initialise the matrix to store the number of sat at different distances
 	with open(tmock+'_mocks.txt', 'r') as ff:
 		mocks = [line.strip() for line in ff]
 
+	icol = -1
 	for im, mock in enumerate(mocks):
-		lsty0 = lsty[itm] ; cols0 = cols[count]
+		lsty0 = lsty[itm]
 		inleg = tmock 
 
 		vfact1 = mock.split('vfact')[1]
@@ -71,12 +73,13 @@ for itm, tmock in enumerate(typemock):
 		vt1 = mock.split('vt')[1]
 		vt = vt1.split('pm')[0]
 		if (float(vt)>0.):
-			count += 1
 			inleg = tmock+', $v^{\\rm infall}$' 
 			if (itm == 0):
 				lsty0 = '--' 
 			else:
-				lsty0 = '-.' 
+				lsty0 = '-.'
+		else:
+			icol += 1 #Assumes the names go: vt0, vt500
 
 		nsatv = np.zeros(shape=(len(vbins)))
 		for xbox in xboxs:
@@ -85,8 +88,7 @@ for itm, tmock in enumerate(typemock):
 					ibox = xbox+ybox+zbox #; print('Box: {}'.format(ibox))
 
 					# Change the mock names to the box we are working with
-					imock = mock.replace('mock000','mock'+ibox)
-					mockfile = mockdir+imock
+					mockfile = mock.replace('mock000','mock'+ibox)
 					check_file(mockfile) ; print('Mockfile: {}'.format(mockfile))
 
 					# Read mock catalogue
@@ -105,9 +107,9 @@ for itm, tmock in enumerate(typemock):
 								ldx.append(float(line.strip().split()[11]))
 								ldy.append(float(line.strip().split()[12]))
 								ldz.append(float(line.strip().split()[13]))
-					dvx = np.asarray(ldvx,dtype=float)
-					dvy = np.asarray(ldvy,dtype=float)
-					dvz = np.asarray(ldvz,dtype=float)
+					dvx = np.asarray(ldvx,dtype=float)/(1+redshift)
+					dvy = np.asarray(ldvy,dtype=float)/(1+redshift)
+					dvz = np.asarray(ldvz,dtype=float)/(1+redshift)
 					dx = np.asarray(ldx,dtype=float)
 					dy = np.asarray(ldy,dtype=float)
 					dz = np.asarray(ldz,dtype=float)
@@ -115,8 +117,8 @@ for itm, tmock in enumerate(typemock):
 					ldvx = [] ; ldvy = [] ; ldvz = []
 
 					# Get vr for satellite galaxies
-					vsat = (dz*(dx*dvx + dy*dvy) - 
-							dvz*(dx*dx + dy*dy))/np.sqrt(dx*dx + 
+					vsat = (dz*(dx*dvx + dy*dvy) -
+							dvz*(dx*dx + dy*dy))/np.sqrt(dx*dx +
 														 dy*dy)/np.sqrt(dx*dx + dy*dy + dz*dz)
 					if(np.min(vsat)<minv) : minv = np.min(vsat)
 					if(np.max(vsat)>maxv) : maxv = np.max(vsat)
@@ -128,7 +130,7 @@ for itm, tmock in enumerate(typemock):
 
 		area = np.sum(nsatv)*dv
 		l1, = ax.plot(vhist,(nsatv/area),label=inleg,
-					  linestyle=lsty0,color=cols0)
+					  linestyle=lsty0,color=cols[icol])
 
 		if (itm==0 and vt=='0'):
 			plot_colors.append(l1)
@@ -136,8 +138,6 @@ for itm, tmock in enumerate(typemock):
 		if (im<2):
 			plot_lines.append(l1)
 			inlegs.append(inleg)
-		if Testing:
-			if (len(inlegs)>1): break
 
 print('    Vmin={:.2f}, Vmax={:.2f} km/s'.format(minv,maxv))
 
