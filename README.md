@@ -72,21 +72,23 @@ The information in the files "\*particles\*" under each "STEP#" directory is as 
 * id goes from 0 to the total number of particles.
 * fof_halo_tag is the same tag as in the fof files.
 
-# Constructing mock catalogues from teh OuterRim simulation
+# Constructing mock catalogues from the OuterRim simulation
 
 This repository contains code relevant for the construction of mocks catalogues using the OuterRim simulation.
 
-* **produce_ascii_files**: Contains programs to read the OuterRim simulation files in the genericIO format (both halo and particle information) and produce ASCII files. In order to use this code, the python module generio is required. This can be get following [this directions](http://trac.alcf.anl.gov/projects/genericio).
-
-* **hmf**: Contains code to generate the halo mass function from the OuterRim simulation.
-
-* **hod_mocks**: Contains programs to find the best HOD values and to populate the simulation accordingly. Code from Martin White can be found here:
-
-https://github.com/martinjameswhite/MockingDESI.git
+* **biasf**: Code to generate the bias function for the OuterRim simulation.
 
 * **compute_nz**
 
-* **RSD_in_BOX**
+* **hmf**: Contains code to generate the halo mass function from the OuterRim simulation.
+
+* **hod_mocks**: Contains programs to find the best HOD values and to populate the simulation accordingly. Code from Martin White can be found here: https://github.com/martinjameswhite/MockingDESI.git
+
+* **mocks_props**: Calculations and plots for exploring the characteristics of different mocks, Nsat vs r, etc.
+
+* **produce_ascii_files**: Contains programs to read the OuterRim simulation files in the genericIO format (both halo and particle information) and produce ASCII files. In order to use this code, the python module generio is required. This can be get following [this directions](http://trac.alcf.anl.gov/projects/genericio).
+
+* **RSD_in_BOX** ???
 
 * **tools**: Contains programs that are useful in all projects, such an example on reading 
 in python a GenericIO file.

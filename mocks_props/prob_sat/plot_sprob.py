@@ -13,8 +13,8 @@ Testing = False
 
 istep = 266
 
-typemock=['NFW1'] #,'part']
-lsty=['-',':']
+typemock=['NFW'] #,'part']
+lsty=['-','-'] #lsty=['-',':']
 
 xboxs = ['0','1','2']
 yboxs = ['0','1','2']
@@ -32,7 +32,7 @@ nhist = nbins +dn*0.5
 # Figure 
 fig = plt.figure()
 xtit = "Number of Satellites"
-ytit = "Probability density (arbitrary units)"
+ytit = "P(N)"
 xmin = 0.9 ; xmax = 5.1
 
 ax = fig.add_subplot(111)
@@ -77,7 +77,7 @@ for itm, tmock in enumerate(typemock):
 			beta = 'Next integer'
 			lstyle = lsty[itm]
 		else:
-			lstyle = '--'
+			lstyle = '-' #'--'
 
 		pnsat = np.zeros(shape=(len(nhist)))
 		for xbox in xboxs:
