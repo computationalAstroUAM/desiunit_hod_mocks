@@ -5,9 +5,9 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-from distinct_colours import get_distinct
-import mpl_style
-plt.style.use(mpl_style.style1)
+#from distinct_colours import get_distinct
+#import mpl_style
+#plt.style.use(mpl_style.style1)
 
 Testing = False
 
@@ -30,7 +30,7 @@ vbins = np.arange(vmin,vmax,dv)
 vhist = vbins +dv*0.5 #; print(len(vhist)) ; sys.exit() 
 
 # Figure 
-fig = plt.figure()
+fig = plt.figure(figsize=(7,4))
 xtit = "$v_{r}({\\rm km/s})$"
 ytit = "$P_v$"
 xmin = -1500. ; xmax = -xmin
@@ -40,19 +40,22 @@ ax = fig.add_subplot(111)
 ax.set_xlim(xmin,xmax) #; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 
-# Count mocks to set colour
-colmax = 0 
-for tmock in typemock:
-	count = 0
-	with open(tmock+'_mocks.txt','r') as ff:
-		for line in ff: count +=1
-	if(count>colmax): colmax = count
-if((colmax % 2)!= 0):
-	print('STOP: odd number of catalogues')
-	sys.exit()
-else:
-	colmax = colmax/2 #taken into account mocks with vinfall
-cols = get_distinct(colmax)
+## Count mocks to set colour
+#colmax = 0 
+#for tmock in typemock:
+#	count = 0
+#	with open(tmock+'_mocks.txt','r') as ff:
+#		for line in ff: count +=1
+#	if(count>colmax): colmax = count
+#if((colmax % 2)!= 0):
+#	print('STOP: odd number of catalogues')
+#	sys.exit()
+#else:
+#	colmax = colmax/2 #taken into account mocks with vinfall
+#cols = get_distinct(colmax)
+
+# Santi's colours                                                                     
+cols = ['red','green','blue','yellow'] 
 
 # Loop over mocks and boxes
 minv = 999. ; maxv = -999.
@@ -157,5 +160,5 @@ for item in leg.legendHandles:
 
 # Save figure
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/vdis/r_vdis_'+str(istep)+'.png'
-fig.savefig(plotfile)
+fig.savefig(plotfile,dpi=300)
 print 'Output: ',plotfile

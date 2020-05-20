@@ -1,8 +1,8 @@
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.00_beta0.000_K1.00_vt0pm0_mock000.dat
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.00_beta0.000_K1.00_vt500pm200_mock000.dat
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.40_beta0.000_K1.00_vt0pm0_mock000.dat
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.40_beta0.000_K1.00_vt500pm200_mock000.dat
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.60_beta0.000_K1.00_vt0pm0_mock000.dat
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.60_beta0.000_K1.00_vt500pm200_mock000.dat
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.20_beta0.000_K1.00_vt0pm0_mock000.dat
-/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.20_beta0.000_K1.00_vt500pm200_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/velocity/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.40_beta0.000_K1.00_vt0pm0_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/velocity/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.40_beta0.000_K1.00_vt500pm200_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/HOD/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.00_beta0.000_K1.00_vt0pm0_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/velocity/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact1.00_beta0.000_K1.00_vt500pm200_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/velocity/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.60_beta0.000_K1.00_vt0pm0_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/velocity/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.60_beta0.000_K1.00_vt500pm200_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/velocity/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.20_beta0.000_K1.00_vt0pm0_mock000.dat
+/mnt/lustre/savila/HOD_NFW/output_V14/velocity/galaxies_1000Mpc_V1.4more_NFW_mu11.515_Ac0.0537_As0.05301_vfact0.20_beta0.000_K1.00_vt500pm200_mock000.dat

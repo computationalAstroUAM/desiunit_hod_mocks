@@ -5,9 +5,9 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-from distinct_colours import get_distinct
-import mpl_style
-plt.style.use(mpl_style.style1)
+#from distinct_colours import get_distinct
+#import mpl_style
+#plt.style.use(mpl_style.style1)
 
 Testing = False
 
@@ -29,7 +29,7 @@ rbins = np.arange(rmin,rmax,dr)
 rhist = rbins +dr*0.5
 
 # Figure 
-fig = plt.figure()
+fig = plt.figure(figsize=(7,4))
 xtit = "${\\rm log}_{10}(r\,h^{-1}{\\rm Mpc})$"
 ytit = "${\\rm log}_{10}(N_{\\rm sat,dex}/N_{\\rm sat, tot})$"
 xmin = -1.5 ; xmax = 0.7
@@ -39,14 +39,17 @@ ax = fig.add_subplot(111)
 ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 
-# Count mocks to set colour
-colmax = 0
-for tmock in typemock:
-	count = 0
-	with open(tmock+'_mocks.txt', 'r') as ff:
-		for line in ff: count += 1
-	if (count>colmax) : colmax = count
-cols = get_distinct(colmax)
+## Count mocks to set colour
+#colmax = 0
+#for tmock in typemock:
+#	count = 0
+#	with open(tmock+'_mocks.txt', 'r') as ff:
+#		for line in ff: count += 1
+#	if (count>colmax) : colmax = count
+#cols = get_distinct(colmax)
+
+# Santi's colours                                                                     
+cols = ['yellow','blue','red','green'] 
 
 # Loop over mocks and boxes
 minr = 999. ; maxr = -999.
@@ -121,10 +124,10 @@ print('    Rmin={:.2f}, Rmax={:.2f} Mpc'.format(minr,maxr))
 
 # Legend
 leg = ax.legend(loc=0)
-leg.draw_frame(False)
+#leg.draw_frame(False)
 
 # Save figure
 #plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_r_'+str(istep)+'.png'
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_ntot_linr_'+str(istep)+'.png'
-fig.savefig(plotfile)
+fig.savefig(plotfile,dpi=300)
 print 'Output: ',plotfile

@@ -5,9 +5,9 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-from distinct_colours import get_distinct
-import mpl_style
-plt.style.use(mpl_style.style1)
+#from distinct_colours import get_distinct
+#import mpl_style
+#plt.style.use(mpl_style.style1)
 
 Testing = False
 
@@ -30,7 +30,7 @@ nbins = np.arange(nmin,nmax,dn)
 nhist = nbins +dn*0.5
 
 # Figure 
-fig = plt.figure()
+fig = plt.figure(figsize=(7,4))
 xtit = "Number of Satellites"
 ytit = "P(N)"
 xmin = 0.9 ; xmax = 5.1
@@ -42,14 +42,17 @@ ind = np.where(nhist<=xmax)
 ax.set_xticks(list(nhist[ind]),minor=False)
 ax.tick_params(axis='x', which='minor', bottom=False, top=False)
 
-# Count mocks to set colour
-colmax = 0
-for tmock in typemock:
-	count = 0
-	with open(tmock+'_mocks.txt', 'r') as ff:
-		for line in ff: count += 1
-	if (count>colmax) : colmax = count
-cols = get_distinct(colmax)
+## Count mocks to set colour
+#colmax = 0
+#for tmock in typemock:
+#	count = 0
+#	with open(tmock+'_mocks.txt', 'r') as ff:
+#		for line in ff: count += 1
+#	if (count>colmax) : colmax = count
+#cols = get_distinct(colmax)
+
+# Santi's colours
+cols = ['yellow','blue','red','green']
 
 # Loop over mocks and boxes
 maxn = -999.
@@ -69,7 +72,7 @@ for itm, tmock in enumerate(typemock):
 		print('Mock: {}'.format(mock))
 
 		beta1 = mock.split('beta')[1] 
-		beta = 'beta='+beta1.split('_')[0] 
+		beta = 'Neg-bin $\\beta$='+beta1.split('_')[0] 
 		if (beta1.split('_')[0] == '0.000'):
 			beta = 'Poisson'
 			lstyle = lsty[itm]
@@ -122,15 +125,17 @@ for itm, tmock in enumerate(typemock):
 		yy = np.asarray(tmp,dtype=float)
 		tmp = np.insert(nhist,0,nhist[0]-1)
 		xx = np.asarray(tmp,dtype=float) + 0.5
-		ax.step(xx,yy,label=tmock+', '+beta,
+		#ax.step(xx,yy,label=tmock+', '+beta,
+		#		linestyle=lstyle,color=cols[im])
+		ax.step(xx,yy,label=beta,
 				linestyle=lstyle,color=cols[im])
 
 # Legend
 leg = ax.legend(loc=1)
-leg.draw_frame(False)
+#leg.draw_frame(False)
 
 # Save figure
-#plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_'+str(istep)+'.png'
-plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_bestfit_'+str(istep)+'.png'
-fig.savefig(plotfile)
+plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_'+str(istep)+'.png'
+#plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_bestfit_'+str(istep)+'.png'
+fig.savefig(plotfile,dpi=300)
 print 'Output: ',plotfile

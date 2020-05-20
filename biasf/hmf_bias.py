@@ -4,8 +4,8 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-import mpl_style
-plt.style.use(mpl_style.style1)
+#import mpl_style
+#plt.style.use(mpl_style.style1)
 
 def chi2(obs,model,err):
 	val = 0.
@@ -93,5 +93,5 @@ axh.plot(lmh[ind],mf[ind],'k-')
 
 # Save figure
 plotfile = halodir + 'plots/hmf_bias_'+str(istep)+'.png'
-fig.savefig(plotfile)
+fig.savefig(plotfile,dpi=300)
 print 'Output: ',plotfile

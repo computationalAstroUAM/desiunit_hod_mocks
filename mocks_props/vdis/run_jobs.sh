@@ -6,8 +6,8 @@ logpath=/mnt/lustre/gonzalev/Junk
 
 path2code=/users/gonzalev/eboss/mock_construction/mocks_props/vdis/
 
-#code2run=r_vdis.py
-code2run=theta_vdis.py
+code2run=r_vdis.py
+#code2run=theta_vdis.py
 #code2run=phi_vdis.py
 
 name=vdis
