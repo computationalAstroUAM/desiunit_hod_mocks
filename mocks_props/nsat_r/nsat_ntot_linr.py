@@ -24,7 +24,7 @@ if (Testing):
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Bins in distance (Mpc/h)
-rmin = 0.03 ; rmax = 5. ; dr = 0.05
+rmin = 0.01 ; rmax = 5. ; dr = 0.05
 rbins = np.arange(rmin,rmax,dr)
 rhist = rbins +dr*0.5
 
@@ -32,7 +32,7 @@ rhist = rbins +dr*0.5
 fig = plt.figure(figsize=(7,4.2))
 xtit = "$r\,[{\\rm Mpc}h^{-1}]$"
 ytit = "${\\rm log}_{10}(N_{\\rm sat,dex}/N_{\\rm sat, tot})$"
-xmin = rmin ; xmax = rmax
+xmin = 0.06 ; xmax = rmax
 ymin = -5 ; ymax = -0.4
 
 ax = fig.add_subplot(111)
