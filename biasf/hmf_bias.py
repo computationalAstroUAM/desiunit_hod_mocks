@@ -66,7 +66,7 @@ plt.setp(axb.get_xticklabels(), visible=False)
 axb.set_autoscale_on(False) ;  axb.minorticks_on()
 axb.set_ylim(0.6,10.)
 axb.set_yscale('log')
-axb.set_ylabel("$b(20\leq r/h^{-1}{\\rm Mpc} \leq 80)$")
+axb.set_ylabel("$b(M)$")
 
 axb.plot(mb,bias,'ko',label='Haloes')
 axb.plot(xp,p2(xp),label='$p_2$',linestyle='-')
@@ -84,7 +84,7 @@ axh.set_autoscale_on(False) ;  axh.minorticks_on()
 ymin = 0.0000002 ; ymax = 1.
 axh.set_ylim(ymin, ymax)
 axh.set_yscale('log')
-axh.set_ylabel("$\Phi/h^3{\\rm Mpc}^{-3}{\\rm dlog}_{10}^{-1}M)$")
+axh.set_ylabel("${\\rm d}n(h^3{\\rm Mpc}^{-3})/{\\rm dlog}_{10}M}$")
 axh.annotate('z='+str(zz),xy=(13.7,0.1))
 
 ind = np.where(mf >0.)
@@ -94,4 +94,4 @@ axh.plot(lmh[ind],mf[ind],'k-')
 # Save figure
 plotfile = halodir + 'plots/hmf_bias_'+str(istep)+'.png'
 fig.savefig(plotfile,dpi=300)
-print 'Output: ',plotfile
+print('Output: ',plotfile)

@@ -32,7 +32,7 @@ nhist = nbins +dn*0.5
 # Figure 
 fig = plt.figure(figsize=(7,4))
 xtit = "Number of Satellites"
-ytit = "P(N)"
+ytit = "Normalised count"
 xmin = 0.9 ; xmax = 5.1
 
 ax = fig.add_subplot(111)
@@ -52,7 +52,7 @@ ax.tick_params(axis='x', which='minor', bottom=False, top=False)
 #cols = get_distinct(colmax)
 
 # Santi's colours
-cols = ['yellow','blue','red','green']
+cols = ['#bcbd22','blue','red','green']
 
 # Loop over mocks and boxes
 maxn = -999.
@@ -138,4 +138,4 @@ leg = ax.legend(loc=1)
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_'+str(istep)+'.png'
 #plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_bestfit_'+str(istep)+'.png'
 fig.savefig(plotfile,dpi=300)
-print 'Output: ',plotfile
+print('Output: ',plotfile)

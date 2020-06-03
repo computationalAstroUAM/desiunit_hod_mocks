@@ -49,7 +49,7 @@ ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 #cols = get_distinct(colmax)
 
 # Santi's colours                                                                     
-cols = ['yellow','blue','red','green'] 
+cols = ['#bcbd22','blue','red','green'] 
 
 # Loop over mocks and boxes
 minr = 999. ; maxr = -999.
@@ -130,4 +130,4 @@ leg = ax.legend(loc=0)
 #plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_r_'+str(istep)+'.png'
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_ntot_linr_'+str(istep)+'.png'
 fig.savefig(plotfile,dpi=300)
-print 'Output: ',plotfile
+print('Output: ',plotfile)

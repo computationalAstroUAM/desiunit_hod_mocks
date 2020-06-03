@@ -34,10 +34,11 @@ fig = plt.figure(figsize=(7,4))
 xtit = "$v_{r}({\\rm km/s})$"
 ytit = "$P_v$"
 xmin = -1500. ; xmax = -xmin
-ymin = -4.5 ; ymax = 0.
+ymin = -0.0001 ; ymax = 0.0107
+ddy = 0.08*(ymax-ymin) 
 
 ax = fig.add_subplot(111)
-ax.set_xlim(xmin,xmax) #; ax.set_ylim(ymin,ymax)
+ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 
 ## Count mocks to set colour
@@ -55,7 +56,7 @@ ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 #cols = get_distinct(colmax)
 
 # Santi's colours                                                                     
-cols = ['red','green','blue','yellow'] 
+cols = ['red','green','blue','#bcbd22'] 
 
 # Loop over mocks and boxes
 minv = 999. ; maxv = -999.
@@ -67,6 +68,8 @@ for itm, tmock in enumerate(typemock):
 
 	icol = -1
 	for im, mock in enumerate(mocks):
+		avgv = 0. ; ntot = 0.
+
 		lsty0 = lsty[itm]
 		inleg = tmock 
 
@@ -124,14 +127,23 @@ for itm, tmock in enumerate(typemock):
 					if(np.min(vsat)<minv) : minv = np.min(vsat)
 					if(np.max(vsat)>maxv) : maxv = np.max(vsat)
 
+					# Average v2
+					avgv = avgv + np.sum(vsat*vsat) 
+					ntot = ntot + len(vsat)
+
 					# Histogram
 					H, bin_edges = np.histogram(vsat, bins=np.append(vbins,vmax))
 					nsatv = nsatv + H
 					print('    Nmin={:.2f}, Nmax={:.2f}'.format(np.min(nsatv),np.max(nsatv)))
 
 		area = np.sum(nsatv)*dv
+		if (itm==0):
+			col0=cols[icol]
+		else:
+			col0=cols[1]
+
 		l1, = ax.plot(vhist,(nsatv/area),label=inleg,
-					  linestyle=lsty0,color=cols[icol])
+					  linestyle=lsty0,color=col0)
 
 		if (itm==0 and vt=='0'):
 			plot_colors.append(l1)
@@ -139,6 +151,12 @@ for itm, tmock in enumerate(typemock):
 		if (im<2):
 			plot_lines.append(l1)
 			inlegs.append(inleg)
+
+		# Arrows to show sqrt(<v^2>)
+		avgv = np.sqrt(avgv/ntot)
+		ax.arrow(avgv,ymax-ddy,0,ddy,color=col0,ls=lsty0,             
+                 length_includes_head=True,                                           
+                 head_width=ddy*0.3, head_length=ddy*0.3)  
 
 print('    Vmin={:.2f}, Vmax={:.2f} km/s'.format(minv,maxv))
 
@@ -161,4 +179,4 @@ for item in leg.legendHandles:
 # Save figure
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/vdis/r_vdis_'+str(istep)+'.png'
 fig.savefig(plotfile,dpi=300)
-print 'Output: ',plotfile
+print('Output: ',plotfile)
