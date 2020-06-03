@@ -24,15 +24,15 @@ if (Testing):
 	xboxs = ['0'] ; yboxs = ['1'] ; zboxs =['2']
 
 # Bins in distance (Mpc/h)
-rmin = 0.01 ; rmax = 5. ; dr = 0.05
+rmin = 0.03 ; rmax = 5. ; dr = 0.05
 rbins = np.arange(rmin,rmax,dr)
 rhist = rbins +dr*0.5
 
 # Figure 
-fig = plt.figure(figsize=(7,4))
-xtit = "${\\rm log}_{10}(r\,h^{-1}{\\rm Mpc})$"
+fig = plt.figure(figsize=(7,4.2))
+xtit = "$r\,[{\\rm Mpc}h^{-1}]$"
 ytit = "${\\rm log}_{10}(N_{\\rm sat,dex}/N_{\\rm sat, tot})$"
-xmin = -1.5 ; xmax = 0.7
+xmin = rmin ; xmax = rmax
 ymin = -5 ; ymax = -0.4
 
 ax = fig.add_subplot(111)
@@ -108,7 +108,7 @@ for itm, tmock in enumerate(typemock):
 
 		ytot = np.sum(nsatr)
 		ind = np.where(nsatr>0)
-		ax.plot(np.log10(rhist[ind]),np.log10(nsatr[ind]/ytot),label=tmock+', K='+kval,
+		ax.plot(rhist[ind],np.log10(nsatr[ind]/ytot),label=tmock+', K='+kval,
 				linestyle=lsty[itm],color=cols[im]) 
 		#ax.plot(np.log10(rhist[ind]),nsatr[ind]/ymax,label=tmock+', K='+kval,
 		#		linestyle=lsty[itm],color=cols[im]) #lineal 
@@ -116,9 +116,11 @@ for itm, tmock in enumerate(typemock):
 		# Arrows/lines to show the median values
 		dy = 0.05*(ymax-ymin) 
 		avgr = avgr/ntot
-		ax.arrow(np.log10(avgr),ymax-dy,0,dy,color=cols[im],ls=lsty[itm],
-				 length_includes_head=True,
-				 head_width=dy*0.1, head_length=dy*0.3)
+		ax.arrow(avgr,ymax-dy,0,dy,color=cols[im],ls=lsty[itm],
+				 length_includes_head=True)
+				 #head_width=dy*0.1, head_length=dy*0.3)
+
+		ax.set_xscale('log')
 
 print('    Rmin={:.2f}, Rmax={:.2f} Mpc'.format(minr,maxr))
 
