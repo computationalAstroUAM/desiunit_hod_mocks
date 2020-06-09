@@ -122,14 +122,14 @@ for itm, tmock in enumerate(typemock):
 					ldx = [] ; ldy = [] ; ldz = []
 					ldvx = [] ; ldvy = [] ; ldvz = []
 
+					# Average vz2
+					avgv = avgv + np.sum(dvz*dvz) 
+					ntot = ntot + len(dvz)
+
 					# Get vr for satellite galaxies
 					vsat = (dx*dvx + dy*dvy + dz*dvz)/np.sqrt(dx*dx + dy*dy + dz*dz)
 					if(np.min(vsat)<minv) : minv = np.min(vsat)
 					if(np.max(vsat)>maxv) : maxv = np.max(vsat)
-
-					# Average v2
-					avgv = avgv + np.sum(vsat*vsat) 
-					ntot = ntot + len(vsat)
 
 					# Histogram
 					H, bin_edges = np.histogram(vsat, bins=np.append(vbins,vmax))
