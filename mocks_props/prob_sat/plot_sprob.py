@@ -8,6 +8,7 @@ from matplotlib import gridspec
 #from distinct_colours import get_distinct
 #import mpl_style
 #plt.style.use(mpl_style.style1)
+plt.rcParams.update({'font.size': 16})
 
 Testing = False
 
@@ -30,7 +31,7 @@ nbins = np.arange(nmin,nmax,dn)
 nhist = nbins +dn*0.5
 
 # Figure 
-fig = plt.figure(figsize=(7,4))
+fig = plt.figure(figsize=(7,4.5))
 xtit = "Number of Satellites"
 ytit = "Normalised count"
 xmin = 0.9 ; xmax = 5.1
@@ -40,7 +41,7 @@ ax.set_xlim(xmin,xmax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 ind = np.where(nhist<=xmax)
 ax.set_xticks(list(nhist[ind]),minor=False)
-ax.tick_params(axis='x', which='minor', bottom=False, top=False)
+ax.tick_params(which='both',bottom=True, top=True, left=True, right=True,direction='in')
 
 ## Count mocks to set colour
 #colmax = 0
@@ -131,11 +132,12 @@ for itm, tmock in enumerate(typemock):
 				linestyle=lstyle,color=cols[im])
 
 # Legend
-leg = ax.legend(loc=1)
+#leg = ax.legend(loc=1)
 #leg.draw_frame(False)
 
 # Save figure
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_'+str(istep)+'.png'
 #plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/prob_sat_bestfit_'+str(istep)+'.png'
+plt.tight_layout()
 fig.savefig(plotfile,dpi=300)
 print('Output: ',plotfile)

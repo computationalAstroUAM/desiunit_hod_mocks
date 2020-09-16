@@ -8,13 +8,14 @@ from matplotlib import gridspec
 #from distinct_colours import get_distinct
 #import mpl_style
 #plt.style.use(mpl_style.style1)
+plt.rcParams.update({'font.size': 16})
 
 Testing = False
 
 istep = 266
 redshift = 0.865
 
-typemock=['NFW','part']
+typemock=['NFW','PART']
 lsty=['-',':']
 
 xboxs = ['0','1','2']
@@ -33,13 +34,15 @@ vhist = vbins +dv*0.5 #; print(len(vhist)) ; sys.exit()
 fig = plt.figure(figsize=(7,4))
 xtit = "$v_{r}({\\rm km/s})$"
 ytit = "$P_v$"
-xmin = -1500. ; xmax = -xmin
+xmin = -1500. ; xmax = 1499.
 ymin = -0.0001 ; ymax = 0.0107
 ddy = 0.08*(ymax-ymin) 
 
 ax = fig.add_subplot(111)
 ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
+ax.minorticks_on()
+ax.tick_params(which='both',bottom=True, top=True, left=True, right=True,direction='in')
 
 ## Count mocks to set colour
 #colmax = 0 
@@ -57,6 +60,7 @@ ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 
 # Santi's colours                                                                     
 cols = ['red','green','blue','#bcbd22'] 
+pcols = ['k']
 
 # Loop over mocks and boxes
 minv = 999. ; maxv = -999.
@@ -140,7 +144,7 @@ for itm, tmock in enumerate(typemock):
 		if (itm==0):
 			col0=cols[icol]
 		else:
-			col0=cols[1]
+			col0=pcols[0]
 
 		l1, = ax.plot(vhist,(nsatv/area),label=inleg,
 					  linestyle=lsty0,color=col0)
@@ -160,23 +164,24 @@ for itm, tmock in enumerate(typemock):
 
 print('    Vmin={:.2f}, Vmax={:.2f} km/s'.format(minv,maxv))
 
-# Legend
-legend1 = ax.legend(plot_lines, inlegs, loc=2)
-legend1.draw_frame(False)
-for h in legend1.legendHandles:
-    h.set_color('k')
-
-plt.gca().add_artist(legend1)
-
-leg = ax.legend(plot_colors, alphas, loc=1,
-				handlelength=0, handletextpad=0)
-leg.draw_frame(False)
-for ii,text in enumerate(leg.get_texts()):
-    text.set_color(cols[ii])
-for item in leg.legendHandles:
-    item.set_visible(False)
+## Legend
+#legend1 = ax.legend(plot_lines, inlegs, loc=2)
+#legend1.draw_frame(False)
+#for h in legend1.legendHandles:
+#    h.set_color('k')
+#
+#plt.gca().add_artist(legend1)
+#
+#leg = ax.legend(plot_colors, alphas, loc=1,
+#				handlelength=0, handletextpad=0)
+#leg.draw_frame(False)
+#for ii,text in enumerate(leg.get_texts()):
+#    text.set_color(cols[ii])
+#for item in leg.legendHandles:
+#    item.set_visible(False)
 
 # Save figure
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/vdis/r_vdis_'+str(istep)+'.png'
+plt.tight_layout()
 fig.savefig(plotfile,dpi=300)
 print('Output: ',plotfile)

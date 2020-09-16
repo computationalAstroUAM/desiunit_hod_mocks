@@ -8,6 +8,7 @@ from matplotlib import gridspec
 #from distinct_colours import get_distinct
 #import mpl_style
 #plt.style.use(mpl_style.style1)
+plt.rcParams.update({'font.size': 16})
 
 Testing = False
 
@@ -31,13 +32,15 @@ rhist = rbins +dr*0.5
 # Figure 
 fig = plt.figure(figsize=(7,4.2))
 xtit = "$r\,[{\\rm Mpc}h^{-1}]$"
-ytit = "${\\rm log}_{10}(N_{\\rm sat,dex}/N_{\\rm sat, tot})$"
+ytit = "${\\rm log}(N_{\\rm sat,dex}/N_{\\rm sat, tot})$"
 xmin = 0.06 ; xmax = rmax
 ymin = -5 ; ymax = -0.4
 
 ax = fig.add_subplot(111)
 ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax)
 ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
+ax.minorticks_on()
+ax.tick_params(which='both',bottom=True, top=True, left=True, right=True,direction='in')
 
 ## Count mocks to set colour
 #colmax = 0
@@ -125,11 +128,12 @@ for itm, tmock in enumerate(typemock):
 print('    Rmin={:.2f}, Rmax={:.2f} Mpc'.format(minr,maxr))
 
 # Legend
-leg = ax.legend(loc=0)
-#leg.draw_frame(False)
+leg = ax.legend(loc=0, prop={"size":14})
+leg.draw_frame(False) 
 
 # Save figure
 #plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_r_'+str(istep)+'.png'
 plotfile = '/mnt/lustre/eboss/OuterRim/mocks/plots/nsat_ntot_linr_'+str(istep)+'.png'
+plt.tight_layout()
 fig.savefig(plotfile,dpi=300)
 print('Output: ',plotfile)
