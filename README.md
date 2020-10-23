@@ -1,110 +1,23 @@
-/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27> tar cz OuterRim_STEP266_fofproperties_* | ssh violeta@dtn01.nersc.gov tar zxv -C /global/u2/v/violeta/OuterRim/STEP266_z0.865/subvols27
+# Constructing DESI mock catalogues from the UNIT simulation
 
-# The OuterRim simulation  
+This repository contains code relevant for the construction of DESI mocks catalogues using the UNIT simulation.
 
-The OuterRim simulation was run on a cubic volume of side 3000 Mpc$/h$, with dark matter particles with masses of $1.9\cdot 10^9 M_{\odot}/h$. The simulation has 100 snapshots, with 34 between $1<z<3.5$. 
+* **hmf**: Contains code to generate the halo mass function from the OuterRim simulation. [to be adapted to UNIT]
 
-## Friend-of-friends halo information
-
-Between $z=0$ and $z=10$ a friend-of-friend halo catalogue has been contructed assuming $b=0.168$. There are a minimun of 20 particles per halo.
-
-The OuterRim Friend-of-friend halo information has been stored in 110 files ending "#0...#109".
-
-The information in the files "\*fofproperties\*" under each "STEP#" directory is as follow:
-
-```
-[data type] Variable name
-
-[i 32] fof_halo_count
-[i 64] fof_halo_tag
-[f 32] fof_halo_mass
-[f 32] fof_halo_center_x
-[f 32] fof_halo_center_y
-[f 32] fof_halo_center_z
-[f 32] fof_halo_mean_x
-[f 32] fof_halo_mean_y
-[f 32] fof_halo_mean_z
-[f 32] fof_halo_mean_vx
-[f 32] fof_halo_mean_vy
-[f 32] fof_halo_mean_vz
-[f 32] fof_halo_vel_disp
-```
-
-### Definitions from Katrin Heitmann:
-
-* These files are just FOF halos, no substructure information. While the subfiles do contain subvolumes, they are not contiguous volumes. So in one subfile you can have several cubes of halos that are distributed throughout the full volume.
-
-* The halo count is the number of particles in a halo, in some sense it is redundant with the halo mass (since you can just take that number and multiply it by the particle mass). 
-
-* The halo tag is mostly there to enable identifying halo properties in other files at the same time step. The number is not consistent through the time steps. 
-
-* The halo mass is measured in Msun/h. 
-
-* The fof_halo_center is measured in comoving Mpc/h and it is the potential minimum. 
-
-* The fof_halo_mean is the position of the center of mass. 
-
-* Velocities are comoving peculiar in km/s. 
-
-* The halo velocity dispersion is something I would ignore for now (that was not tested carefully and we never used it). 
-
-## Particle files information
-
-The OuterRim Friend-of-friend halo information has been stored in 110 files ending "#0...#109".
-
-The information in the files "\*particles\*" under each "STEP#" directory is as follow:
-
-```
-[data type] Variable name
-
-[f 32] x
-[f 32] y
-[f 32] z
-[f 32] vx
-[f 32] vy
-[f 32] vz
-[i 64] id
-[i 64] fof_halo_tag
-```
-
-* x,y,z are measured in comoving Mpc/h 
-* vx,vy, vz are comoving peculiar in km/s.
-* id goes from 0 to the total number of particles.
-* fof_halo_tag is the same tag as in the fof files.
-
-# Constructing mock catalogues from the OuterRim simulation
-
-This repository contains code relevant for the construction of mocks catalogues using the OuterRim simulation.
-
-* **biasf**: Code to generate the bias function for the OuterRim simulation.
+* **biasf**: Code to generate the bias function for the OuterRim simulation. [to be adapted to UNIT]
 
 * **compute_nz**
-
-* **hmf**: Contains code to generate the halo mass function from the OuterRim simulation.
 
 * **hod_mocks**: Contains programs to find the best HOD values and to populate the simulation accordingly. Code from Martin White can be found here: https://github.com/martinjameswhite/MockingDESI.git
 
 * **mocks_props**: Calculations and plots for exploring the characteristics of different mocks, Nsat vs r, etc.
 
-* **produce_ascii_files**: Contains programs to read the OuterRim simulation files in the genericIO format (both halo and particle information) and produce ASCII files. In order to use this code, the python module generio is required. This can be get following [this directions](http://trac.alcf.anl.gov/projects/genericio).
-
-* **RSD_in_BOX** ???
-
 * **tools**: Contains programs that are useful in all projects, such an example on reading 
 in python a GenericIO file.
 
-------------------------------------------
-For coding in Pyhton, add the following:
 
------------------  .cshrc
-######eBOSS
-set EBOSS = /mnt/lustre/eboss
 
-alias CUTE '${EBOSS}/CUTE/CUTE'
-alias CUTE_box '${EBOSS}/CUTE_box/CUTE_box'
+# DESI specifications
+Specifications following the mocks tabulated [here](https://desi.lbl.gov/trac/wiki/Clustering/MockChallenge/post-recon-BAO/stage2).
 
-######Python
-module add  apps/anaconda/2.4.0
-setenv PYTHONPATH ${EBOSS}/genericio/python
-------------------
-
+* UNITSIM-ELG mocks at redshift = 0.9873 (snap 97), densities={25e-4,20e-4,5.5e-4}/(Mpc/h)^-3, bias=1.4
