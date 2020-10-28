@@ -6,7 +6,6 @@ import matplotlib ; matplotlib.use('Agg')
 from matplotlib import pyplot as plt  
 
 
-A=1
 def percentiles(val,data,weights=None):
 	if (val <0 or val >1):
 		sys.exit('STOP percentiles: 0<val<1')
