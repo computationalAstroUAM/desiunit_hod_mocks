@@ -66,11 +66,11 @@ xmean = np.zeros(len(mhist))
 
 ###################
 # Directory with the OuterRim simulation haloes
-halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
+halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/' #Cambiar path para UNITISM
 
 # OuterRim simulation characteristics (FOF b=0.168 here)
-mp  = 1.9E+09 # Msol/h
-lbox= 3000.   # Mpc/h
+mp  = 1.9E+09 # Msol/h   #Cambiar para UNITSIM
+lbox= 1000.   # Mpc/h
 
 # Get the conversion between the name of the time step and redshift
 step = np.genfromtxt(halodir+'step_redshift.txt',usecols=0,dtype=int)
