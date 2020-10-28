@@ -69,7 +69,7 @@ xmean = np.zeros(len(mhist))
 halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/' #Cambiar path para UNITISM
 
 # OuterRim simulation characteristics (FOF b=0.168 here)
-mp  = 1.9E+09 # Msol/h   #Cambiar para UNITSIM. Hay que cambiarlo!
+mp  = 1.24718E+09 # Msol/h   
 lbox= 1000.   # Mpc/h
 
 # Get the conversion between the name of the time step and redshift
