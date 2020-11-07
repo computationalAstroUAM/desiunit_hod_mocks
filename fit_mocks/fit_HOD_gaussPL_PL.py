@@ -61,11 +61,15 @@ elif (target == 1):
 	#V7
 	print("\n** Target V7 **\n")
 	if corr==0:
-		n_targ = 0.00021873633933254137 ## mean of SGC+NGC
+		#n_targ = 0.00021873633933254137 ## mean of SGC+NGC
+                n_targ = 0.0025
 	else:
-		n_targ = 0.00021873633933254137**2/0.00021292622222222226 # corrected (integral biased)
-	b_targ = 1.3198 ## corrected for Kaiser
-	
+		#n_targ = 0.00021873633933254137**2/0.00021292622222222226 # corrected (integral biased)
+                n_targ = 0.0025
+	#b_targ = 1.3198 ## corrected for Kaiser
+	b_targ = 1.4
+
+
 
 
 # Fixed parameters 
@@ -87,18 +91,22 @@ if verbose:
 # Read HMF (number of haloes per dlogMh per volume)
 #halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
 #mfile = halodir+'hmf.txt'
-mfile = '/users/savila/ELGs_eBOSS/python_scripts/hmf_finest.txt'
+#mfile = '/users/savila/ELGs_eBOSS/python_scripts/hmf_finest.txt'
+mfile = '../output/HMF_and_accumulated_and_log_mainhalos.txt' 
 hmf1, mhmed1 = \
-    np.loadtxt(mfile, usecols= (2,3), unpack=True )
+    np.loadtxt(mfile, usecols= (3,0), unpack=True )
 mhist = mhmed1 #mhmed1[1:-1]
 hmf = hmf1 #hmf1[1:-1]
 
 # Read bias function
-bfile = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/bias_rl20.0_rh80.0.txt'
+#bfile = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/bias_rl20.0_rh80.0.txt'
+bfile = '../bias/all_bias.txt'
 M,b = np.loadtxt(bfile, usecols= (0,1), unpack=True )
-p4 = np.poly1d(np.polyfit(M[:76], b[:76], 4))
 
-bh = p4(mhmed1)
+
+p5 = np.poly1d(np.polyfit(M[:76], b[:76], 5))
+
+bh = p5(mhmed1)
 
 #-------------------------------------------------------
 
@@ -219,12 +227,12 @@ for ii,fsat in enumerate(fsat_arr):
 print("out",out)
 if (times7):
 	if (corr==0):
-		np.savetxt('HOD_gaussPL_PL_x7.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('HODs/HOD_gaussPL_PL_x7.params',out,fmt='%.2f %.6f %e %e')
 	else:
-		np.savetxt('HOD_gaussPL_PL_corr_x7.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('HODs/HOD_gaussPL_PL_corr_x7.params',out,fmt='%.2f %.6f %e %e')
 else:
 	if (corr==0):
-		np.savetxt('HOD_gaussPL_PL.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('HODs/HOD_gaussPL_PL.params',out,fmt='%.2f %.6f %e %e')
 	else:
-		np.savetxt('HOD_gaussPL_PL_corr.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('HODs/HOD_gaussPL_PL_corr.params',out,fmt='%.2f %.6f %e %e')
 	

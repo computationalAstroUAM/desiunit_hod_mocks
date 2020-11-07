@@ -1,27 +1,30 @@
 import sys, os, glob, getpass
-sys.path.append('/mnt/lustre/eboss/OuterRim/genericio/python/')
-import genericio as gio
+
+#sys.path.append('/mnt/lustre/eboss/OuterRim/genericio/python/')  #Hay que cambiar
+#import genericio as gio                                          #Hay que averiguar donde esta
+
 import numpy as np
 import matplotlib ; matplotlib.use('Agg')                                    
 from matplotlib import pyplot as plt  
 
 
+#Definicion de una funcion que depende de tres parametros, el primero es un valor entre 0 y 1, el segundo es un array de datos y el tercero es un array de la misma longitud con los pesos asociados a esos datos.
 def percentiles(val,data,weights=None):
 	if (val <0 or val >1):
 		sys.exit('STOP percentiles: 0<val<1')
 
 	if (weights is None):
-		ws = np.zeros(shape=(len(data))) ; ws.fill(1.)
+		ws = np.zeros(shape=(len(data))) ; ws.fill(1.)    #Crea array de unos de la misma longitud que el array de datos (no hay pesos)
 	else:
 		ws = weights
 
 	data = np.array(data) ; ws = np.array(ws)
-	ind_sorted = np.argsort(data)  # Median calculation from wquantiles
-	sorted_data = data[ind_sorted] ; sorted_weights = ws[ind_sorted]
+	ind_sorted = np.argsort(data)  #np.argsort(x) coge el array x y da otro array con los puestos de cada uno de los datos si el array estuviera ordenado# Median calculation from wquantiles
+	sorted_data = data[ind_sorted] ; sorted_weights = ws[ind_sorted]  #Ordena el array data de menor a mayor, los pesos se trasladan tambien en conjunto con los datos
 
 	num = np.cumsum(sorted_weights) - 0.5*sorted_weights 
 	den = np.sum(sorted_weights) 
-	if (den!=0): 
+	if (den!=0): # != is NOT equal to 
 		pn = num/den   
 		percentiles = np.interp(val, pn, sorted_data)  
 	else:
@@ -30,20 +33,26 @@ def percentiles(val,data,weights=None):
 	return percentiles
 
 # Read snapshot
+#Creo que se puede prescindir, ya se que snapshot es y que redshift tiene
+
 narg = len(sys.argv)
+'''
 if(narg == 2):
 	istep = int(sys.argv[1])
 	iz = 0
 else:
 	sys.exit('1 argument to be passed: step(snapshot number)')
-
+'''
+iz = 0
 # Make a plot?
+
 makeplot = True
 withlegend = False
+'''
 if makeplot:
 	from distinct_colours import get_distinct 
 	cols = get_distinct(10) 
-
+'''
 # Bins
 #edges = np.array([10.58, 10.7, 10.8, 10.9, 11., 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 12., 12.1, 12.2, 12.3, 12.4, 12.5, 12.7, 13., 13.5, 14., 16.])
 edges = np.concatenate( [ np.array( np.arange(10.58,12.4999,0.04)), np.array(np.arange(12.5,13.6,0.05)),  np.array(np.arange(13.6,14.0,0.1)),np.array(np.arange(14.2,14.6,0.2)), np.array([16.]) ])
@@ -59,23 +68,25 @@ nbmed = 100
 xbmed = np.zeros((len(mhist),nbmed))
 for i,ed in enumerate(edges[:-1]):
 	xbmed[i,:] = np.linspace(ed, edges[i+1], num=nbmed)
+
 ybmed = np.zeros((len(mhist),nbmed-1))
 
 # Mean mass in each bin
 xmean = np.zeros(len(mhist))
 
 ###################
-# Directory with the OuterRim simulation haloes
-halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/' #Cambiar path para UNITISM
+# Directory with the UNITSIM simulation haloes
+halodir = '../'   # en esta carpeta se encuentra el fichero out_97p_X_Y_Z_VX_VY_VZ_M.txt 
 
-# OuterRim simulation characteristics (FOF b=0.168 here)
+# UNITSIM simulation characteristics (FOF b=0.280 here)
 mp  = 1.24718E+09 # Msol/h   
 lbox= 1000.   # Mpc/h
 
 # Get the conversion between the name of the time step and redshift
-step = np.genfromtxt(halodir+'step_redshift.txt',usecols=0,dtype=int)
-redshift = np.genfromtxt(halodir+'step_redshift.txt',usecols=1)
-
+'''
+step = np.genfromtxt(halodir+'step_redshift.txt',usecols=0,dtype=int)   #Cambiar
+redshift = np.genfromtxt(halodir+'step_redshift.txt',usecols=1)         #Cambiar
+'''
 # Initialize the parameters for the figure ------------------
 plt.rcParams['legend.numpoints'] = 1 
 plt.rcParams['axes.labelsize'] = 10.0 ; fs = 20 
@@ -92,18 +103,23 @@ jj = 111
 ax = fig.add_subplot(jj) 
 ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax)                              
 ax.set_xlabel(xtit,fontsize = fs) ; ax.set_ylabel(ytit,fontsize = fs)        
+
 #-------------------------------------------------------------                
 
 # Paths to files
-zz = redshift[np.where(step == istep)]
+#zz = redshift[np.where(step == istep)]   #relacion entre la linea 106 y 39, basicamente quieren que des un numero que corresponde al snaphot (en mi caso 97) POR PANTALLA, yo directamente ignoro eso porque ya se cual es mi snapshot y se cual es su redshift
+zz = 0.9873
 print('Processing snapshot at redshift={}'.format(zz))
-nroot = halodir+'HaloCatalog/STEP'+str(istep)    
+
+#nroot = halodir+'HaloCatalog/STEP'+str(istep)   #este debe ser justamente el fichero que queremos, lo sustituyo por lo de abajo 
+nroot = halodir+'out_97p_X_Y_Z_VX_VY_VZ_M.txt'
 
 # Initialize to 0 the halo mass functions
 ycount, yh = [np.zeros(len(mhist)) for _ in range(2)]
 
 # Loop over each of the sub volumes
-infiles = glob.glob(nroot+'/*'+str(istep)+'.fofproperties#*')
+#infiles = glob.glob(nroot+'/*'+str(istep)+'.fofproperties#*')  #Arreglar para que solo considere un archivo
+infiles = nroot  #En este caso solo consideramos un archivo
 for inf,infile in enumerate(infiles):
 	print(infile)
 	# Print out once the information stored in each file
@@ -117,7 +133,7 @@ for inf,infile in enumerate(infiles):
 	count = np.log10(in_count[ind])
 	H, bins_edges = np.histogram(count,bins=edges)
 	ycount = ycount + H
-
+'''
 	in_count = [] ; ind = [] # Flush arrays
 
 	# FOF mass (Msun/h)
@@ -156,7 +172,8 @@ for i,ed in enumerate(edges[:-1]):
 
 # Write Halo Mass function to a file
 tofile = zip(edges[:-1],edges[1:], ycount, mhmed, mhist, dm, xmean)
-outfile = halodir+'hmfs/hmf_'+str(istep)+'.txt'
+#outfile = halodir+'hmfs/hmf_'+str(istep)+'.txt'   # sitio donde guarda la funcion de masa. En este caso calcula muchas, en mi caso solo una porque solo trabajo con un snapshot
+outfile = halodir+'hmfs/hmf_97.txt'
 #outfile = 'hmf.txt'
 with open(outfile, 'w') as outf:
 	outf.write('# log10Mmin_bin log10Mmax_bin Nhalos/dm/vol log10Mmedian_bin (Mass bin mid point) dM log10Mmean_bin \n')
@@ -189,3 +206,5 @@ if makeplot:
 
 	fig.savefig(plotfile)
 	print('Plot: {}'.format(plotfile))
+'''
+
