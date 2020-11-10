@@ -19,12 +19,12 @@
 
 #ifdef MORE
 	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
-        #define outbase ("/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
+        #define outbase ("output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
 #else
-  	#define outbase ("/output_V1/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
+  	#define outbase ("output_V1/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
 #endif
 //#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
-#define inbase ("/../out_97p_X_Y_Z_VX_VY_VZ_logM.txt")
+#define inbase ("../out_97p_X_Y_Z_VX_VY_VZ_logM.txt")
 //#define partfile ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/vol500Mpc/OuterRim_STEP266_z0.865/OuterRim_STEP266_particles_500Mpc.txt")
 
 
@@ -73,7 +73,7 @@ double *mask;
 //double watson(double );
 
 double BETA;
-i
+
 int main(int argc, char **argv){
   	fprintf(stderr,"Run call:\n\t");
 	int i ;
@@ -189,7 +189,7 @@ int main(int argc, char **argv){
 			fprintf(f_out,"%f %f %f %f %f %f %e %d\n",x,y,z,vx,vy,vz,M,Nsat);
 			#endif
 		
-	i
+	
 		for (j=0;j<Nsat;j++){
 				NFW_to_pos(M,&Dx,&Dy,&Dz,zsnap,K);
 				vir_to_vel(M,zsnap,&Dvx,&Dvy,&Dvz);
@@ -198,9 +198,9 @@ int main(int argc, char **argv){
 				ux = -Dx/Dr;
 				uy = -Dy/Dr;
 				uz = -Dz/Dr;
-				Dvx = (1+zsnap)*(vfact*Dvx + ux*vtrand);
-				Dvy = (1+zsnap)*(vfact*Dvy + uy*vtrand);
-				Dvz = (1+zsnap)*(vfact*Dvz + uz*vtrand);
+				Dvx = (vfact*Dvx + ux*vtrand);  //Eliminado el factor (1+zsnap) en esta linea y las dos siguientes
+				Dvy = (vfact*Dvy + uy*vtrand);
+				Dvz = (vfact*Dvz + uz*vtrand);
 
 				xgal=x+Dx;
 				ygal=y+Dy;

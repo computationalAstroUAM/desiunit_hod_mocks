@@ -51,7 +51,7 @@ def delta_sq(b_mod, b_targ):
 
 target=1
 corr=1
-times7=True
+times7=False
 if (target == 0):
 	#V3 
 	print("\n** Target V3 **\n")
@@ -98,10 +98,16 @@ hmf1, mhmed1 = \
 mhist = mhmed1 #mhmed1[1:-1]
 hmf = hmf1 #hmf1[1:-1]
 
+mhist = np.delete(mhist,76)
+hmf = np.delete(hmf,76)
+mhmed1 = np.delete(mhmed1,76)
+
 # Read bias function
 #bfile = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/bias_rl20.0_rh80.0.txt'
 bfile = '../bias/all_bias.txt'
 M,b = np.loadtxt(bfile, usecols= (0,1), unpack=True )
+print(len(mhist))
+print(len(M))
 
 
 p5 = np.poly1d(np.polyfit(M[:76], b[:76], 5))
