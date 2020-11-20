@@ -62,10 +62,10 @@ elif (target == 1):
 	print("\n** Target V7 **\n")
 	if corr==0:
 		#n_targ = 0.00021873633933254137 ## mean of SGC+NGC
-                n_targ = 0.0025
+                n_targ = 0.0005
 	else:
 		#n_targ = 0.00021873633933254137**2/0.00021292622222222226 # corrected (integral biased)
-                n_targ = 0.0025
+                n_targ = 0.0005
 	#b_targ = 1.3198 ## corrected for Kaiser
 	b_targ = 1.4
 
@@ -110,9 +110,9 @@ print(len(mhist))
 print(len(M))
 
 
-p5 = np.poly1d(np.polyfit(M[:76], b[:76], 5))
+p6 = np.poly1d(np.polyfit(M[:-1], b[:-1], 6))
 
-bh = p5(mhmed1)
+bh = p6(mhmed1)
 
 #-------------------------------------------------------
 
@@ -238,7 +238,7 @@ if (times7):
 		np.savetxt('HODs/HOD_gaussPL_PL_corr_x7.params',out,fmt='%.2f %.6f %e %e')
 else:
 	if (corr==0):
-		np.savetxt('HODs/HOD_gaussPL_PL.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('HODs/HOD_gaussPL_PL_5e-4.params',out,fmt='%.2f %.6f %e %e')
 	else:
-		np.savetxt('HODs/HOD_gaussPL_PL_corr.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('HODs/HOD_gaussPL_PL_corr_5e-4.params',out,fmt='%.2f %.6f %e %e')
 	
