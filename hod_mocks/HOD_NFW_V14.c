@@ -18,18 +18,23 @@
 
 
 #ifdef MORE
-	#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
+	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
+        #define outbase ("output_V1/n_5e-4/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
 #else
-  	#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
+  	#define outbase ("output_V1/n_5e-4/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
 #endif
-#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
+//#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
+#define inbase ("../out_97p_X_Y_Z_VX_VY_VZ_logM.txt")
 //#define partfile ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/vol500Mpc/OuterRim_STEP266_z0.865/OuterRim_STEP266_particles_500Mpc.txt")
 
 
-float zsnap = 0.865;
+//float zsnap = 0.865;
+float zsnap = 0.9873;
 
 double LBOX = 1000.;
-double OMEGA_M = 0.272;
+//double OMEGA_M = 0.272;
+double OMEGA_M = 0.3089;
+
 //double Mmin = 11.0;
 //double M1 = 12.0;
 //double alpha = 1.0;
@@ -77,8 +82,8 @@ int main(int argc, char **argv){
    	}
 	fprintf(stderr,"\n");
 	fprintf(stderr,"Number of params: %d \n",argc);
-	if (argc!=12){
-		fprintf(stderr,"usage: %s mu Ac As vfact beta K  vt sigma(vt) i j k\n",argv[0]);
+	if (argc!=9){
+		fprintf(stderr,"usage: %s mu Ac As vfact beta K  vt sigma(vt)\n",argv[0]);
 		return -1;
 	}
 
@@ -98,17 +103,17 @@ int main(int argc, char **argv){
 	mu = atof(argv[1]);
 	Ac = atof(argv[2]);
 	As = atof(argv[3]);
-	double vfact = atof(argv[4]);
-	BETA  = atof(argv[5]);
+	double vfact = atof(argv[4]);   //alpha_v
+	BETA  = atof(argv[5]); //Poisson = 0 ,  nearest int = -2
 	double K = atof(argv[6]);
-	double vt = atof(argv[7]);
-	double vtdisp = atof(argv[8]);
+	double vt = atof(argv[7]);  //=0  =500
+	double vtdisp = atof(argv[8]);  //=0  =200
 	
 	double ux,uy,uz,vtrand,Dr;
 
-	int imock = atoi(argv[9]);
-	int jmock = atoi(argv[10]);
-	int kmock = atoi(argv[11]);
+	//int imock = atoi(argv[9]);  
+	//int jmock = atoi(argv[10]);
+	//int kmock = atoi(argv[11]);
 	#ifdef HOD1
 	//Old Version:
 	//char *version="1.41";
@@ -134,8 +139,10 @@ int main(int argc, char **argv){
         		double gamma= -1.4;
 		#endif
 	#endif
-	sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp,imock,jmock,kmock);
-	sprintf(input,inbase,imock,jmock,kmock);
+	//sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp,imock,jmock,kmock);
+	//sprintf(input,inbase,imock,jmock,kmock);
+	sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp);
+	sprintf(input,inbase);
 
 	seed = 42;
 	srand(seed);	
@@ -191,9 +198,9 @@ int main(int argc, char **argv){
 				ux = -Dx/Dr;
 				uy = -Dy/Dr;
 				uz = -Dz/Dr;
-				Dvx = (1+zsnap)*(vfact*Dvx + ux*vtrand);
-				Dvy = (1+zsnap)*(vfact*Dvy + uy*vtrand);
-				Dvz = (1+zsnap)*(vfact*Dvz + uz*vtrand);
+				Dvx = (vfact*Dvx + ux*vtrand);  //Eliminado el factor (1+zsnap) en esta linea y las dos siguientes
+				Dvy = (vfact*Dvy + uy*vtrand);
+				Dvz = (vfact*Dvz + uz*vtrand);
 
 				xgal=x+Dx;
 				ygal=y+Dy;
