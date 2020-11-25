@@ -6,14 +6,15 @@ This repository contains code relevant for the construction of DESI mocks catalo
 
 * **biasf**: Code to generate the bias function for the OuterRim simulation. [to be adapted to UNIT]
 
-* **compute_nz**
+* **fit_mocks**: Contains code for obtaining HOD parameters As, Ac, mu, fsat
 
-* **hod_mocks**: Contains programs to find the best HOD values and to populate the simulation accordingly. Code from Martin White can be found here: https://github.com/martinjameswhite/MockingDESI.git
+* **hod_mocks**: Contains programs to find the best HOD values and to populate the simulation accordingly. 
 
 * **mocks_props**: Calculations and plots for exploring the characteristics of different mocks, Nsat vs r, etc.
 
-* **tools**: Contains programs that are useful in all projects, such an example on reading 
-in python a GenericIO file.
+* **nersc_tables.py**: to generate tables for NERSC 
+
+* **pruebas.py**: any probles needed to test python programs
 
 
 

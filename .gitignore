@@ -2,3 +2,9 @@
 [#]*[#]
 .\#*
 run.sh.*
+.*.sw*
+__pycache__/
+errors_*
+*out
+hod_mocks/HOD_NFW*
+
