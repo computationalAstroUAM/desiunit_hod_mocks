@@ -18,14 +18,14 @@ bias = np.zeros((mass_bins))
 
 for i in range(0,mass_bins):
     files = str(i)+'.txt'
-    bias[i] = np.genfromtxt('bias/bias_'+files)
+    bias[i] = np.genfromtxt('../../DESI_outputs/bias_snap100/bias_'+files)
 
 
 bias = np.delete(bias,76)
 mhist = np.delete(mhist,76)
 
 a = np.array([mhist,bias]).T
-np.savetxt('bias/all_bias.txt',a)
+np.savetxt('../../DESI_outputs/bias_snap100/all_bias.txt',a)
 
 # Best polynomial fits
 maxim = len(edges)-2
@@ -35,8 +35,14 @@ p4 = np.poly1d(np.polyfit(mhist[:maxim], bias[:maxim], 4))
 p5 = np.poly1d(np.polyfit(mhist[:maxim], bias[:maxim], 5))
 p6 = np.poly1d(np.polyfit(mhist[:maxim], bias[:maxim], 6))
 
+mb, bias2 = np.loadtxt('bias_rl20.0_rh80.0.txt', unpack = True)
 
-data = np.loadtxt('output/HMF_and_accumulated_and_log_mainhalos.txt')
+#print('My mass: ',mhist)
+#print('Avila mass: ',mb)
+#print('My bias: ',bias)
+#print('Avila bias: ', bias2)
+
+data = np.loadtxt('../../DESI_outputs/output/HMF_and_accumulated_and_log_mainhalos_snap100.txt')
 
 m = data[:,0]
 hmf_log = data[:,3]
@@ -46,14 +52,15 @@ fig.subplots_adjust(hspace=0)
 axs[0].semilogy(m, hmf_log,'b-',label='UNITSIM',basey=10)
 axs[0].set_xlabel(r'$log_{10}\left(M_{h}\right) h^{-1}M_{\odot}$')
 axs[0].set_ylabel(r'$\frac{dn}{dlog_{10}M_h} \left(M_{h}\right)$')
-axs[0].text(11,10**(-5),r'$z = 0.9873$')
+axs[0].text(11,10**(-5),r'$z = 0.8594$')
 axs[0].legend()
 
 axs[1].semilogy(mhist,bias,'ko',label='Haloes')
-axs[1].semilogy(mhist,p2(mhist),color='violet',linestyle='solid',label=r'$p_2$')
-axs[1].semilogy(mhist,p3(mhist),color='g',linestyle='dotted',label=r'$p_3$')
-axs[1].semilogy(mhist,p4(mhist),color='b',linestyle='dashed',label=r'$p_4$')
-axs[1].semilogy(mhist,p5(mhist),color='r',linestyle='dashdot',label=r'$p_5$')
+axs[1].semilogy(mb, bias2, color='g',label='Avila (2020)')
+#axs[1].semilogy(mhist,p2(mhist),color='violet',linestyle='solid',label=r'$p_2$')
+#axs[1].semilogy(mhist,p3(mhist),color='g',linestyle='dotted',label=r'$p_3$')
+#axs[1].semilogy(mhist,p4(mhist),color='b',linestyle='dashed',label=r'$p_4$')
+#axs[1].semilogy(mhist,p5(mhist),color='r',linestyle='dashdot',label=r'$p_5$')
 axs[1].semilogy(mhist,p6(mhist),color='y',linestyle='dashed',label=r'$p_6$')
 axs[1].set_xlabel(r'$log_{10}M_h \left[h^{-1}M_{\odot}\right]$')
 axs[1].set_xlim(10.5,14.5)
@@ -61,15 +68,16 @@ axs[1].set_ylabel(r'$b(M_h)$')
 axs[1].legend()
 
 axs[2].plot(mhist,bias/bias,'k-')
-axs[2].plot(mhist,bias/p2(mhist),color='violet',linestyle='solid')
-axs[2].plot(mhist,bias/p3(mhist),color='g',linestyle='dotted')
-axs[2].plot(mhist,bias/p4(mhist),color='b',linestyle='dashed')
-axs[2].plot(mhist,bias/p5(mhist),color='r',linestyle='dashdot')
+axs[2].plot(mhist,np.interp(mhist,mb, bias2)/bias, color='green')
+#axs[2].plot(mhist,bias/p2(mhist),color='violet',linestyle='solid')
+#axs[2].plot(mhist,bias/p3(mhist),color='g',linestyle='dotted')
+#axs[2].plot(mhist,bias/p4(mhist),color='b',linestyle='dashed')
+#axs[2].plot(mhist,bias/p5(mhist),color='r',linestyle='dashdot')
 axs[2].plot(mhist,bias/p6(mhist),color='y',linestyle='dashed')
 axs[2].set_xlabel(r'$log_{10}M_h \left[h^{-1}M_{\odot}\right]$')
 axs[2].set_xlim(10.5,14.5)
 axs[2].set_ylabel(r'$\frac{b}{p_k}$')
-plt.savefig('plots/Figure1.png',dpi=300)
+plt.savefig('../../DESI_outputs/plots/Figure1_Avila2020_snap100.png',dpi=300)
 plt.close()
 
 

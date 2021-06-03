@@ -38,7 +38,8 @@ k = np.arange(kmin,kmax,dk)
 params = cb.set_params(ns=ns,H0=h*100,ombh2=Omb*h**2,omch2=(Om-Omb)*h**2,WantTransfer=True) #Set all CAMB parameters at once, including parameters which are part of the CAMBparams structure, as well as global parameters.
 PK_th = get_matter_power_interpolator(params,kmax = kmax,nonlinear=False,hubble_units=True)
 
-z1 = 0.9873
+#z1 = 0.9873
+z1 = 0.8594
 Pk_th = PK_th.P(z1,k)
 
 #normalizacion
@@ -97,8 +98,6 @@ Pk = r.power
 #Shotnoise = BoxSize**3/numhalos
 #print(Shotnoise)
 Pk_sim = Pk['power'].real-Pk.attrs['shotnoise']
-
-
 
 n = numhalos/BoxSize**3
 
