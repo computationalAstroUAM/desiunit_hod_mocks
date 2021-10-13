@@ -61,13 +61,14 @@ elif (target == 1):
 	#V7
 	print("\n** Target V7 **\n")
 	if corr==0:
-		#n_targ = 0.00021873633933254137 ## mean of SGC+NGC
+		#n_targ = 0.00021873633933254137 ## mean of SGC+NGC (eBOSS OUTERIM)
+                # (eBOSS UNITSIM)
                 n_targ = 0.0005
 	else:
-		#n_targ = 0.00021873633933254137**2/0.00021292622222222226 # corrected (integral biased)
+		#n_targ = 0.00021873633933254137**2/0.00021292622222222226 # corrected (integral biased) (eBOSS)
                 n_targ = 0.0005
-	#b_targ = 1.3198 ## corrected for Kaiser
-	b_targ = 1.4
+	#b_targ = 1.3198 ## corrected for Kaiser (eBOSS)
+	b_targ = 1.4 #For DESI there is a way to estimate the bias as a function of redshift (pag. 56 White paper DESI) b_targ = 0.84/D(z)
 
 
 
@@ -92,7 +93,10 @@ if verbose:
 #halodir = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/'
 #mfile = halodir+'hmf.txt'
 #mfile = '/users/savila/ELGs_eBOSS/python_scripts/hmf_finest.txt'
-mfile = '../output/HMF_and_accumulated_and_log_mainhalos.txt' 
+
+
+#READ HMF AND BIAS FOR SNAPHSOT Z=0.8594
+mfile = '../../DESI_outputs/output/HMF_and_accumulated_and_log_mainhalos_snap100.txt' 
 hmf1, mhmed1 = \
     np.loadtxt(mfile, usecols= (3,0), unpack=True )
 mhist = mhmed1 #mhmed1[1:-1]
@@ -104,7 +108,7 @@ mhmed1 = np.delete(mhmed1,76)
 
 # Read bias function
 #bfile = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/bias_rl20.0_rh80.0.txt'
-bfile = '../bias/all_bias.txt'
+bfile = '../../DESI_outputs/bias_snap100/all_bias.txt'
 M,b = np.loadtxt(bfile, usecols= (0,1), unpack=True )
 print(len(mhist))
 print(len(M))
@@ -233,12 +237,12 @@ for ii,fsat in enumerate(fsat_arr):
 print("out",out)
 if (times7):
 	if (corr==0):
-		np.savetxt('HODs/HOD_gaussPL_PL_x7.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_x7.params',out,fmt='%.2f %.6f %e %e')
 	else:
-		np.savetxt('HODs/HOD_gaussPL_PL_corr_x7.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_x7.params',out,fmt='%.2f %.6f %e %e')
 else:
 	if (corr==0):
-		np.savetxt('HODs/HOD_gaussPL_PL_5e-4.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_5e-4.params',out,fmt='%.2f %.6f %e %e')
 	else:
-		np.savetxt('HODs/HOD_gaussPL_PL_corr_5e-4.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_5e-4.params',out,fmt='%.2f %.6f %e %e')
 	

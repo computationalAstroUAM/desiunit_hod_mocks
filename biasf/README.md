@@ -1,14 +1,16 @@
-*write_input* This code writes the input for cute (the 2PCF code used here to estimate the bias). This can be run using run_jobs.sh
 
-*run_cute.py* Reads all the *sh scripts created with write_input.py and submits them.
 
-*check_cute.py* to check CUTE's outputs and plot them.
+**all_positions**: creates 77 txt files with X,Y,Z positions to calculate halo power spectrum in order to determine each point of the bias curve
 
-*meanxi_bias.py* to calculate the mean two point correlation function from all the boxes, for the statistical errors.
+**bias_bernhard**: calculates the bias curve
+
+**first.sh**: runs 77 times the python program bias_bernhard using each time a different txt file and generating each time a bias point value
+
+**bias_fsat_numdensity_galaxies**: calculates bias, fsat and numdensity of each one of the galaxy mocks. Also calculates multipoles and Kaiser
 
 *hmf_bias.py* Plot together the HMF+b(M)+b/b_fit
 
-*test_integration.py* to compare integration methods.
+
 
 -----
 'Mocks oficiales’:

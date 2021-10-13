@@ -8,7 +8,7 @@ edges = np.concatenate( [ np.array( np.arange(10.58,12.4999,0.04)), np.array(np.
 dm = edges[1:]-edges[:-1]
 mhist = edges[1:]-0.5*dm
 
-data = np.loadtxt('out_97p_X_Y_Z_VX_VY_VZ_M.txt') 
+data = np.loadtxt('../../DESI_outputs/out_100p_X_Y_Z_VX_VY_VZ_M.txt') 
 halos = data[:,7]
 sel0 = np.where((halos == -1))  #nos quedamos solo con los halos y no subhalos
 M = data[:,6]
@@ -41,5 +41,5 @@ for k in range(0,len(mhist)):
     k+=1
 
 out=np.array([mhist,hmf,hmf_acc,hmflog]).T
-np.savetxt('output/HMF_and_accumulated_and_log_mainhalos.txt',out)
+np.savetxt('../../DESI_outputs/output/HMF_and_accumulated_and_log_mainhalos_snap100.txt',out)
 

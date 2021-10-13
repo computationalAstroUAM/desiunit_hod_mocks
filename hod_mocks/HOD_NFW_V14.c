@@ -16,15 +16,16 @@
 //V1.3, re-fixed NFW (same I:NFW as V<1.0, xmax=1.0 vs xmax=50)
 //V1.4, NFW truncated at rvir/K
 
+#define MORE 1
 
 #ifdef MORE
 	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
-        #define outbase ("output_V1/n_5e-4/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
+        #define outbase ("../../DESI_outputs/output_V1/n_25e-4/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_2beta%.3f_mock_newNB.dat") //BVG
 #else
-  	#define outbase ("output_V1/n_5e-4/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock.dat")
+  	#define outbase ("../../DESI_outputs/output_V1/n_25e-4/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_2beta%.3f_mock_newNB.dat") //BVG
 #endif
 //#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
-#define inbase ("../out_97p_X_Y_Z_VX_VY_VZ_logM.txt")
+#define inbase ("../../DESI_outputs/out_97p_X_Y_Z_VX_VY_VZ_logM.txt")  //BVG
 //#define partfile ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/vol500Mpc/OuterRim_STEP266_z0.865/OuterRim_STEP266_particles_500Mpc.txt")
 
 
@@ -73,6 +74,7 @@ double *mask;
 //double watson(double );
 
 double BETA;
+double BETA2;          //BVG
 
 int main(int argc, char **argv){
   	fprintf(stderr,"Run call:\n\t");
@@ -82,8 +84,8 @@ int main(int argc, char **argv){
    	}
 	fprintf(stderr,"\n");
 	fprintf(stderr,"Number of params: %d \n",argc);
-	if (argc!=9){
-		fprintf(stderr,"usage: %s mu Ac As vfact beta K  vt sigma(vt)\n",argv[0]);
+	if (argc!=10){      //BVG
+		fprintf(stderr,"usage: %s mu Ac As vfact beta K  vt sigma(vt) beta2\n",argv[0]); //BVG
 		return -1;
 	}
 
@@ -108,7 +110,7 @@ int main(int argc, char **argv){
 	double K = atof(argv[6]);
 	double vt = atof(argv[7]);  //=0  =500
 	double vtdisp = atof(argv[8]);  //=0  =200
-	
+	BETA2 = atof(argv[9]);    //BVG   Binomial, only if BETA = 0, BETA2 > 0. If noy using binomial, then set BETA2 = 0
 	double ux,uy,uz,vtrand,Dr;
 
 	//int imock = atoi(argv[9]);  
@@ -141,7 +143,7 @@ int main(int argc, char **argv){
 	#endif
 	//sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp,imock,jmock,kmock);
 	//sprintf(input,inbase,imock,jmock,kmock);
-	sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp);
+	sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp,BETA2);    //BVG
 	sprintf(input,inbase);
 
 	seed = 42;
@@ -266,6 +268,11 @@ int poisson(double l){
 }
 */
 
+
+
+
+
+
 int next_integer(float x){
 	int low = (int) floor(x);
 	float rand01 = ((float) rand()/(RAND_MAX+1.));
@@ -276,8 +283,10 @@ int next_integer(float x){
 		return low+1;
 
 }
- 
-int neg_binomial(double x, double beta){
+
+
+
+/*int neg_binomial(double x, double beta){
 
 	double sigma = sqrt(x)*(1.0+beta);
 	double p = x/(sigma*sigma);
@@ -293,7 +302,44 @@ int neg_binomial(double x, double beta){
 	} while(P<rand01);
 
 	return N;
+}*/
+
+/*BVG code for negative binomial and binomial. x is the mean of the distribution, and beta the parameter that increases the variance of the distribution*/
+
+int neg_binomial(double x, double beta){
+
+        double r = x/beta;
+	double p = r/(r+x);
+
+        double P=0;
+        int N=-1;
+        double rand01 =  ((float) rand()/(RAND_MAX+1.));
+        do{
+                N++;
+                P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ;
+
+        } while(P<rand01);
+
+        return N;
 }
+
+int binomial(double x, double beta2){                                //BVG
+
+        double s = x/beta2;
+
+        double P=0;
+        int N=-1;
+        double rand01 =  ((float) rand()/(RAND_MAX+1.));
+        do{
+                N++;
+                P+= tgamma(s+1)/( tgamma(s+1-N)*tgamma(N+1) ) * pow(beta2,N)*pow(1-beta2,s-N) ;
+
+        } while(P<rand01);
+
+        return N;
+}
+
+
 
 int HOD_powerlaw(double M, double M0, double M1, double alpha, double As){
 	if (M1<=0.0)
@@ -303,15 +349,13 @@ int HOD_powerlaw(double M, double M0, double M1, double alpha, double As){
 	double xsat = (M-M0)/M1;
 	if (BETA<-1.0)
 		return next_integer((As*pow(xsat, alpha)));
-	else if (BETA==0.)
-		return poisson(As*pow(xsat, alpha));
-
-	{
-		double x = As*pow(xsat, alpha);
-		int y = neg_binomial(x,BETA); 
-//		fprintf(stderr,"%f -> %d\n",x,y);
-		return y;
-	}
+	if (BETA==0.)                                                 //BVG
+		if (BETA2 ==0.)                                       //BVG
+		        return poisson(As*pow(xsat, alpha));          //BVG
+	        else                                                  //BVG
+			return binomial(As*pow(xsat, alpha),BETA2);   //BVG
+	if (BETA>0.)                                                  //BVG
+		return neg_binomial(As*pow(xsat, alpha),BETA);        //BVG
 }
 int HOD_erf(double logM, double mu, double sig, double As){
         double r = As*0.5*(1.0+erf((logM-mu)/sig));

@@ -7,7 +7,7 @@ from math import pi
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-data = np.loadtxt('fit_mocks/HODs/HOD_gaussPL_PL_corr_25e-4.params')
+data = np.loadtxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_25e-4.params')
 #data = np.loadtxt('fit_mocks/HODs/HOD_gaussPL_PL_corr_20e-4.params')
 #data = np.loadtxt('fit_mocks/HODs/HOD_gaussPL_PL_corr_5e-4.params')
 
@@ -31,7 +31,7 @@ axs[1].set_ylabel(r'$A_c$')
 axs[2].plot(f_sat,A_s,'g-')
 axs[2].set_xlabel(r'$f_{sat}$')
 axs[2].set_ylabel(r'$A_s$')
-plt.savefig('plots/Ac_As_mu.png',dpi=300)
+#plt.savefig('plots/Ac_As_mu.png',dpi=300)
 plt.close()
 
 sel1= np.where((f_sat == 0.21))
@@ -163,8 +163,10 @@ plt.ylim(10**(-6),100)
 plt.text(10**13.4,10**(-0.4),r'$\alpha = 0.9$')
 plt.text(10**13.4,10**(-0.8),r'$\sigma = 0.12$')
 plt.text(10**13.4,10**(-1.2),r'$\gamma = -1.4$')
+plt.text(10**13.0,10**(-1.6),r'$b_{gal}=1.4$')
+plt.text(10**13.0,10**(-2.0),r'$n_{gal}=25\cdot 10^{-4}$')
 plt.legend()
-plt.savefig('plots/N_sat_cen.png',dpi=300)
+plt.savefig('../../DESI_outputs/plots/N_sat_cen.png',dpi=300)
 
 
 

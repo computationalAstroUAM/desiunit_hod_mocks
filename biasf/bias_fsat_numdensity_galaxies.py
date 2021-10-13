@@ -64,6 +64,8 @@ def D(z): #Growth factor
 sigma8_lin = np.sqrt(sigma2_R(Pk_th,k,8))
 print(sigma8_lin)
 print(sigma8_2)
+
+
 Pk_th = (sigma8**2/sigma8_lin**2)*Pk_th * D(z1)**2
 
 
@@ -170,68 +172,68 @@ np.savetxt('data_multipoles/n_25e-4_mock1_fsat0_realspace.txt',out)
 
 #Redshift space distortions
 
-#H_0 = 100 #Mpc/h
-#def H(z):
-#    return H_0*np.sqrt(Om*(1+z)**3+1-Om)
+H_0 = 100 #Mpc/h
+def H(z):
+    return H_0*np.sqrt(Om*(1+z)**3+1-Om)
 
-#f['z_RSD'] = f['z']+(1+z1)*f['vz+Dvz']/H(z1)
+f['z_RSD'] = f['z']+(1+z1)*f['vz+Dvz']/H(z1)
 
-#f['Position_redshift'] = f['x'][:, None]*[1,0,0]+ f['y'][:, None]*[0,1,0]+ f['z_RSD'][:, None]*[0,0,1]
+f['Position_redshift'] = f['x'][:, None]*[1,0,0]+ f['y'][:, None]*[0,1,0]+ f['z_RSD'][:, None]*[0,0,1]
 
-#mesh = f.to_mesh (compensated = True, Nmesh = Ngrid , BoxSize = BoxSize , position = "Position_redshift" )
-#r = FFTPower(mesh, mode='1d',dk=dk,kmin=Fundamental-dk/2,poles=[0,2,4]) # se calcula el power spectrum en una dimension con la FFT. En mesh le anadimos los datos que nenesita de la linea anterior
-#Pk = r.power
+mesh = f.to_mesh (compensated = True, Nmesh = Ngrid , BoxSize = BoxSize , position = "Position_redshift" )
+r = FFTPower(mesh, mode='1d',dk=dk,kmin=Fundamental-dk/2,poles=[0,2,4]) # se calcula el power spectrum en una dimension con la FFT. En mesh le anadimos los datos que nenesita de la linea anterior
+Pk = r.power
 
-#Pk_sim_rsd = Pk['power'].real-Pk.attrs['shotnoise']
+Pk_sim_rsd = Pk['power'].real-Pk.attrs['shotnoise']
 
-#Pk_poles = r.poles
+Pk_poles = r.poles
 
-#P_0 = Pk_poles['power_0'].real -Pk.attrs['shotnoise']
-#P_2 = Pk_poles['power_2'].real
-#P_4 = Pk_poles['power_4'].real
+P_0 = Pk_poles['power_0'].real -Pk.attrs['shotnoise']
+P_2 = Pk_poles['power_2'].real
+P_4 = Pk_poles['power_4'].real
 
-#modes = Pk_poles['modes']
+modes = Pk_poles['modes']
 
-#k = Pk['k']
+k = Pk['k']
 
-#out = np.array([k,P_0,P_2,P_4]).T
-#np.savetxt('data_multipoles/n_25e-4_mock1_fsat0.txt',out)
-#n = numgalaxies/BoxSize**3
+out = np.array([k,P_0,P_2,P_4]).T
+np.savetxt('data_multipoles/n_25e-4_mock1_fsat0.txt',out)
+n = numgalaxies/BoxSize**3
 
-#sell = np.where((k < 0.1) & (k > 0.01 ))
+sell = np.where((k < 0.1) & (k > 0.01 ))
 
-#k = k[sell]
-#Pk_sim_rsd = Pk_sim_rsd[sell]
-#Pk_th = Pk_th[sell]
+k = k[sell]
+Pk_sim_rsd = Pk_sim_rsd[sell]
+Pk_th = Pk_th[sell]
 
-#print(Pk_sim)
+print(Pk_sim)
 
-#DeltaP2_rsd = ((2*np.pi)**2/(k**2*dk*Vbox))*(Pk_sim_rsd+1/n)**2
+DeltaP2_rsd = ((2*np.pi)**2/(k**2*dk*Vbox))*(Pk_sim_rsd+1/n)**2
 
-#b_min_rsd = 0
-#b_max_rsd = 3
-#db_rsd = 0.002
-#num_rsd = (b_max_rsd-b_min_rsd)/db_rsd
-#num_rsd = int(num_rsd)
+b_min_rsd = 0
+b_max_rsd = 3
+db_rsd = 0.002
+num_rsd = (b_max_rsd-b_min_rsd)/db_rsd
+num_rsd = int(num_rsd)
 
-#xi_2_rsd = np.zeros((num_rsd))
-#i=0
+xi_2_rsd = np.zeros((num_rsd))
+i=0
 
 
-#b_min_range_rsd = int(b_min_rsd/db_rsd)
-#b_max_range_rsd = int(b_max_rsd/db_rsd)
+b_min_range_rsd = int(b_min_rsd/db_rsd)
+b_max_range_rsd = int(b_max_rsd/db_rsd)
 
-#for i in range(b_min_range_rsd,b_max_range_rsd):
-#    for j in range(0,len(Pk_th)):
-#        xi_2_rsd[i] += ((((i*db_rsd)**2.+(2/3.)*(i*db_rsd)*(ff(z1))+0.2*(ff(z1))**2)*Pk_th[j]-Pk_sim_rsd[j])**2.)/DeltaP2_rsd[j]
-#    i+=1
+for i in range(b_min_range_rsd,b_max_range_rsd):
+    for j in range(0,len(Pk_th)):
+        xi_2_rsd[i] += ((((i*db_rsd)**2.+(2/3.)*(i*db_rsd)*(ff(z1))+0.2*(ff(z1))**2)*Pk_th[j]-Pk_sim_rsd[j])**2.)/DeltaP2_rsd[j]
+    i+=1
 
-#print(xi_2)
-#bias_rsd = np.arange(b_min_rsd,b_max_rsd+0.001,db_rsd)
+print(xi_2)
+bias_rsd = np.arange(b_min_rsd,b_max_rsd+0.001,db_rsd)
 
-#pos_rsd = np.where(xi_2_rsd == np.amin(xi_2_rsd))
-#Bias_rsd = bias_rsd[pos_rsd]
-#print('Bias_RSD:',Bias_rsd)
+pos_rsd = np.where(xi_2_rsd == np.amin(xi_2_rsd))
+Bias_rsd = bias_rsd[pos_rsd]
+print('Bias_RSD:',Bias_rsd)
 
 
 

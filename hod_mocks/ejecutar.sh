@@ -26,6 +26,13 @@
 ./HOD_NFW_V14_more 11.723 0.08596 0.05916 1 0 1 500 200 
 ./HOD_NFW_V14_more 11.153 0.01603 0.02829 1 0.10 0.15 0 0
 
+              # COMPROBACION NEAREST INTEGER, BINOMIAL, POISSON, NEGATIVE BINOMIAL, we only change beta and beta2 parameters
+nohup ./HOD_NFW_V14_more_binomial 10.954 0.008899 0.01954 1 -2 1 0 0 0   #we have one number more, the last one, which represents beta2, a parameter from the binomial distribution
+nohup ./HOD_NFW_V14_more_binomial 10.954 0.008899 0.01954 1 0 1 0 0 0.1
+nohup ./HOD_NFW_V14_more_binomial 10.954 0.008899 0.01954 1 0 1 0 0 0
+nohup ./HOD_NFW_V14_more_binomial 10.954 0.008899 0.01954 1 0.1 1 0 0 0
+
+
               # ESTO ES PARA COMPROBAR ONA COSA CON ALPHA_V, VAN APARTE
 ./HOD_NFW_V14_more 11.723 0.08596 0.05916 1 0 1 0 0
 ./HOD_NFW_V14_more 11.723 0.08596 0.05916 0.2 0 1 0 0
