@@ -332,18 +332,18 @@ int neg_binomial(double x, double beta){
 
 int n(double y, double z){  //BVG
         int outn = 0;
-        if (1/z >= ceil(y+pow(10,-6)))
+	if (1/z >= trunc(y+1.0))
                 outn = 1/z;
         else
-                outn = ceil(y+pow(10,-6));
+                outn = trunc(y+1.0);
         return outn;
 }
 
 double p(double y, double z){   //BVG
-        if (1/z >= ceil(y+pow(10,-6)))
+        if (1/z >= trunc(y+1.0))
                 return y*z;
         else
-                return y/(ceil(y+pow(10,-6)));
+                return y/(trunc(y+1.0));
 
 }
 
