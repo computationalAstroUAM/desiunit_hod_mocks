@@ -10,7 +10,175 @@ def H(z):
     return H_0*np.sqrt(Om*(1+z)**3+1-Om)
 
 z1 = 0.865
+
+
+#./HOD_NFW_V14_more_BVG 10.944 0.00843 0.017237 1    -2   1    0   0      #Mock 1
+#./HOD_NFW_V14_more_BVG 11.069 0.01213 0.021702 1     0  0.25  0   0      #Mock 2
+#./HOD_NFW_V14_more_BVG 11.759 0.08799 0.057523 1.5   0   1    0   0      #Mock 3
+#./HOD_NFW_V14_more_BVG 11.759 0.08799 0.057523 1     0   1   500 200     #Mock 4
+#./HOD_NFW_V14_more_BVG 11.240 0.02003 0.029333 1     0  0.4   0   0      #Mock 6
+#./HOD_NFW_V14_more_BVG 11.264 0.02153 0.030546 1     0  0.25  0   0      #Mock 13
+#./HOD_NFW_V14_more_BVG 10.500 0.00636 0.007098 1     0  0.25  0   0      #Mock 16
+#./HOD_NFW_V14_more_BVG 11.069 0.01213 0.021702 1     0  0.25  0   0      #Mock 11 reference
+
+#Figura 7 Avila 2020
+m1 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu10.944_Ac0.0084_As0.01724_vfact1.00_beta-2.000_K1.00_vt0pm0_BVG.dat')
+
+X_m1 = m1[:,0]
+Y_m1 = m1[:,1]
+Z_m1 = m1[:,2]
+VZ_m1 = m1[:,5]
+Z_RSD_m1 = Z_m1+(1+z1)*VZ_m1/H(z1)
+
+for i in range(0,len(Z_RSD_m1)):
+    if Z_RSD_m1[i] < 0:
+        Z_RSD_m1[i] = Z_RSD_m1[i]+Lbox
+    if Z_RSD_m1[i] > Lbox:
+        Z_RSD_m1[i] = Z_RSD_m1[i]-Lbox
+
+out_m1 = np.array([X_m1,Y_m1,Z_m1,Z_RSD_m1]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock1.txt',out_m1)
+
+
+m2 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu11.069_Ac0.0121_As0.02170_vfact1.00_beta0.000_K0.25_vt0pm0_BVG.dat')
+
+X_m2 = m2[:,0]
+Y_m2 = m2[:,1]
+Z_m2 = m2[:,2]
+VZ_m2 = m2[:,5]
+Z_RSD_m2 = Z_m2+(1+z1)*VZ_m2/H(z1)
+
+for i in range(0,len(Z_RSD_m2)):
+    if Z_RSD_m2[i] < 0:
+        Z_RSD_m2[i] = Z_RSD_m2[i]+Lbox
+    if Z_RSD_m2[i] > Lbox:
+        Z_RSD_m2[i] = Z_RSD_m2[i]-Lbox
+
+out_m2 = np.array([X_m2,Y_m2,Z_m2,Z_RSD_m2]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock2.txt',out_m2)
+
+m3 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu11.759_Ac0.0880_As0.05752_vfact1.50_beta0.000_K1.00_vt0pm0_BVG.dat')
+
+X_m3 = m3[:,0]
+Y_m3 = m3[:,1]
+Z_m3 = m3[:,2]
+VZ_m3 = m3[:,5]
+Z_RSD_m3 = Z_m3+(1+z1)*VZ_m3/H(z1)
+
+for i in range(0,len(Z_RSD_m3)):
+    if Z_RSD_m3[i] < 0:
+        Z_RSD_m3[i] = Z_RSD_m3[i]+Lbox
+    if Z_RSD_m3[i] > Lbox:
+        Z_RSD_m3[i] = Z_RSD_m3[i]-Lbox
+
+out_m3 = np.array([X_m3,Y_m3,Z_m3,Z_RSD_m3]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock3.txt',out_m3)
+
+m4 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu11.759_Ac0.0880_As0.05752_vfact1.00_beta0.000_K1.00_vt500pm200_BVG.dat')
+
+X_m4 = m4[:,0]
+Y_m4 = m4[:,1]
+Z_m4 = m4[:,2]
+VZ_m4 = m4[:,5]
+Z_RSD_m4 = Z_m4+(1+z1)*VZ_m4/H(z1)
+
+for i in range(0,len(Z_RSD_m4)):
+    if Z_RSD_m4[i] < 0:
+        Z_RSD_m4[i] = Z_RSD_m4[i]+Lbox
+    if Z_RSD_m4[i] > Lbox:
+        Z_RSD_m4[i] = Z_RSD_m4[i]-Lbox
+
+out_m4 = np.array([X_m4,Y_m4,Z_m4,Z_RSD_m4]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock4.txt',out_m4)
+
+m5 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu11.240_Ac0.0200_As0.02933_vfact1.00_beta0.000_K0.40_vt0pm0_BVG.dat')
+
+X_m5 = m5[:,0]
+Y_m5 = m5[:,1]
+Z_m5 = m5[:,2]
+VZ_m5 = m5[:,5]
+Z_RSD_m5 = Z_m5+(1+z1)*VZ_m5/H(z1)
+
+for i in range(0,len(Z_RSD_m5)):
+    if Z_RSD_m5[i] < 0:
+        Z_RSD_m5[i] = Z_RSD_m5[i]+Lbox
+    if Z_RSD_m5[i] > Lbox:
+        Z_RSD_m5[i] = Z_RSD_m5[i]-Lbox
+
+out_m5 = np.array([X_m5,Y_m5,Z_m5,Z_RSD_m5]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock6.txt',out_m5)
+
+m6 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu11.264_Ac0.0215_As0.03055_vfact1.00_beta0.000_K0.25_vt0pm0_BVG.dat')
+
+X_m6 = m6[:,0]
+Y_m6 = m6[:,1]
+Z_m6 = m6[:,2]
+VZ_m6 = m6[:,5]
+Z_RSD_m6 = Z_m6+(1+z1)*VZ_m6/H(z1)
+
+for i in range(0,len(Z_RSD_m6)):
+    if Z_RSD_m6[i] < 0:
+        Z_RSD_m6[i] = Z_RSD_m6[i]+Lbox
+    if Z_RSD_m6[i] > Lbox:
+        Z_RSD_m6[i] = Z_RSD_m6[i]-Lbox
+
+out_m6 = np.array([X_m6,Y_m6,Z_m6,Z_RSD_m6]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock13.txt',out_m6)
+
+m7 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu10.500_Ac0.0064_As0.00710_vfact1.00_beta0.000_K0.25_vt0pm0_BVG.dat')
+
+X_m7 = m7[:,0]
+Y_m7 = m7[:,1]
+Z_m7 = m7[:,2]
+VZ_m7 = m7[:,5]
+Z_RSD_m7 = Z_m7+(1+z1)*VZ_m7/H(z1)
+
+for i in range(0,len(Z_RSD_m7)):
+    if Z_RSD_m7[i] < 0:
+        Z_RSD_m7[i] = Z_RSD_m7[i]+Lbox
+    if Z_RSD_m7[i] > Lbox:
+        Z_RSD_m7[i] = Z_RSD_m7[i]-Lbox
+
+out_m7 = np.array([X_m7,Y_m7,Z_m7,Z_RSD_m7]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock16.txt',out_m7)
+'''
+m8 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu11.759_Ac0.0880_As0.05752_vfact1.00_beta0.000_K1.00_vt500pm200_BVG.dat')
+
+X_m8 = m8[:,0]
+Y_m8 = m8[:,1]
+Z_m8 = m8[:,2]
+VZ_m8 = m8[:,5]
+Z_RSD_m8 = Z_m8+(1+z1)*VZ_m8/H(z1)
+
+for i in range(0,len(Z_RSD_m8)):
+    if Z_RSD_m8[i] < 0:
+        Z_RSD_m8[i] = Z_RSD_m8[i]+Lbox
+    if Z_RSD_m8[i] > Lbox:
+        Z_RSD_m8[i] = Z_RSD_m8[i]-Lbox
+
+out_m8 = np.array([X_m8,Y_m8,Z_m8,Z_RSD_m8]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock11.txt',out_m8)
+'''
+m9 = np.loadtxt('../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V1.4more_NFW_mu11.143_Ac0.0151_As0.02478_vfact1.00_beta0.100_K0.15_vt0pm0_BVG.dat')
+
+X_m9 = m9[:,0]
+Y_m9 = m9[:,1]
+Z_m9 = m9[:,2]
+VZ_m9 = m9[:,5]
+Z_RSD_m9 = Z_m9+(1+z1)*VZ_m9/H(z1)
+
+for i in range(0,len(Z_RSD_m9)):
+    if Z_RSD_m9[i] < 0:
+        Z_RSD_m9[i] = Z_RSD_m9[i]+Lbox
+    if Z_RSD_m9[i] > Lbox:
+        Z_RSD_m9[i] = Z_RSD_m9[i]-Lbox
+
+out_m9 = np.array([X_m9,Y_m9,Z_m9,Z_RSD_m9]).T
+np.savetxt('../DESI_outputs/NERSC_tables/october2021/mock9.txt',out_m9)
+
+
 #Comprobacion a partir de mock1 de Avila, 2020 con NI,P,B,NB variando unicamente el parametro beta
+
 '''
 NI = np.loadtxt('../DESI_outputs/output_V1/mocks_chisquared/galaxies_1000Mpc_V1.4more_NFW_mu10.954_Ac0.0089_As0.01954_vfact1.00_beta-2.000_K1.00_vt0pm0_BVG.dat')
 
@@ -165,7 +333,7 @@ for i in range(0,len(Z_RSD_NB_02)):
 
 out_NB_02 = np.array([X_NB_02,Y_NB_02,Z_NB_02,Z_RSD_NB_02]).T
 np.savetxt('../DESI_outputs/NERSC_tables/october2021/n_25_beta0.2.txt',out_NB_02)
-'''
+
 NB_03 = np.loadtxt('../DESI_outputs/output_V1/mocks_chisquared/galaxies_1000Mpc_V1.4more_NFW_mu10.954_Ac0.0089_As0.01954_vfact1.00_beta0.300_K1.00_vt0pm0_BVG.dat')
 
 X_NB_03 = NB_03[:,0]
@@ -182,7 +350,7 @@ for i in range(0,len(Z_RSD_NB_03)):
 
 out_NB_03 = np.array([X_NB_03,Y_NB_03,Z_NB_03,Z_RSD_NB_03]).T
 np.savetxt('../DESI_outputs/NERSC_tables/october2021/n_25_beta0.3.txt',out_NB_03)
-
+'''
 
 
 '''

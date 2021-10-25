@@ -20,9 +20,9 @@
 
 #ifdef MORE
 	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
-        #define outbase ("../../DESI_outputs/output_V1/mocks_chisquared/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG.dat") //BVG
+        #define outbase ("../../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG.dat") //BVG
 #else
-  	#define outbase ("../../DESI_outputs/output_V1/mocks_chisquared/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG.dat") //BVG
+  	#define outbase ("../../DESI_outputs/output_V1/mocks_fig7_Av2020/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG.dat") //BVG
 #endif
 //#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
 #define inbase ("../../DESI_outputs/out_100p_X_Y_Z_VX_VY_VZ_logM.txt")  //BVG
@@ -306,18 +306,24 @@ int next_integer(float x){
 
 /*BVG code for negative binomial and binomial. x is the mean of the distribution, and beta the parameter that increases the variance of the distribution*/
 
+
+/*overflow happens in gamma(x) when x>171.7*/
 int neg_binomial(double x, double beta){
 
         double r = x/beta;
 	double p = r/(r+x);
-
+	double xmax = 171.7;
         double P=0;
         int N=-1;
         double rand01 =  ((float) rand()/(RAND_MAX+1.));
         do{
                 N++;
+/*		if((r+N)<xmax){*/
                 P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ;
-
+                
+/*		else{
+		P+= pow(r,N)/( tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ;
+                }*/
         } while(P<rand01);
 
         return N;
