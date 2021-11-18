@@ -58,17 +58,20 @@ if (target == 0):
 	#n_targ = 0.000246549484522
 	#b_targ = 1.3193
 elif (target == 1):
-	#V7
-	print("\n** Target V7 **\n")
-	if corr==0:
-		#n_targ = 0.00021873633933254137 ## mean of SGC+NGC (eBOSS OUTERIM)
-                # (eBOSS UNITSIM)
-                n_targ = 0.0005
-	else:
-		#n_targ = 0.00021873633933254137**2/0.00021292622222222226 # corrected (integral biased) (eBOSS)
-                n_targ = 0.0005
-	#b_targ = 1.3198 ## corrected for Kaiser (eBOSS)
-	b_targ = 1.4 #For DESI there is a way to estimate the bias as a function of redshift (pag. 56 White paper DESI) b_targ = 0.84/D(z)
+    #V7
+    print("\n** Target V7 **\n")
+    if corr==0:
+        #n_targ = 0.00021873633933254137 ## mean of SGC+NGC (eBOSS OUTERIM)
+        # (eBOSS UNITSIM)
+        #n_targ = 0.0005
+        n_targ = 0.0024065
+    else:
+        #n_targ = 0.00021873633933254137**2/0.00021292622222222226 # corrected (integral biased) (eBOSS)
+        #n_targ = 0.0005
+        n_targ = 0.0024065 # to produce mocks in order to make chi squared, but really number density is more or less 10 times higher than eboss number density 
+        #b_targ = 1.3198 ## corrected for Kaiser (eBOSS)
+        #b_targ = 1.4 #For DESI there is a way to estimate the bias as a function of redshift (pag. 56 White paper DESI) b_targ = 0.84/D(z)
+    b_targ = 1.327 #best fit UNITparticles to eboss elg data
 
 
 
@@ -242,7 +245,7 @@ if (times7):
 		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_x7.params',out,fmt='%.2f %.6f %e %e')
 else:
 	if (corr==0):
-		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_5e-4.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_2.4e-3_b1.327.params',out,fmt='%.2f %.6f %e %e')
 	else:
-		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_5e-4.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_2.4e-3_b1.327.params',out,fmt='%.2f %.6f %e %e')
 	

@@ -34,7 +34,7 @@ float zsnap = 0.865;
 
 double LBOX = 1000.;
 //double OMEGA_M = 0.272;
-double OMEGA_M = 0.3089;
+double OMEGA_M = 0.3089; //UNITSIM
 
 //double Mmin = 11.0;
 //double M1 = 12.0;
