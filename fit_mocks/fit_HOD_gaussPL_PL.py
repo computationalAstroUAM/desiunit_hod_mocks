@@ -105,13 +105,13 @@ hmf1, mhmed1 = \
 mhist = mhmed1 #mhmed1[1:-1]
 hmf = hmf1 #hmf1[1:-1]
 
-mhist = np.delete(mhist,76)
-hmf = np.delete(hmf,76)
-mhmed1 = np.delete(mhmed1,76)
+###mhist = np.delete(mhist,76)
+###hmf = np.delete(hmf,76)
+###mhmed1 = np.delete(mhmed1,76)
 
 # Read bias function
 #bfile = '/mnt/lustre/eboss/OuterRim/OuterRim_sim/bias_rl20.0_rh80.0.txt'
-bfile = '../../DESI_outputs/bias_snap100/all_bias.txt'
+bfile = '../../DESI_outputs/bias_snap100/all_bias_particles_short.txt'    #1.  all_bias computed with CAMB,   2.    all_bias_particles_short computed with 1% particles 
 M,b = np.loadtxt(bfile, usecols= (0,1), unpack=True )
 print(len(mhist))
 print(len(M))
@@ -245,7 +245,7 @@ if (times7):
 		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_x7.params',out,fmt='%.2f %.6f %e %e')
 else:
 	if (corr==0):
-		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_2.4e-3_b1.327.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_2.4e-3_b1.327_particles_short_76.params',out,fmt='%.2f %.6f %e %e')
 	else:
-		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_2.4e-3_b1.327.params',out,fmt='%.2f %.6f %e %e')
+		np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_2.4e-3_b1.327_particles_short_76.params',out,fmt='%.2f %.6f %e %e')
 	

@@ -17,7 +17,7 @@ cd ../../DESI_outputs/positions_for_each_mass_bin_snap100/
 for i in *.txt
 do
   echo "Looping ... i is set to $i"
-  python3 ../../desiunit_hod_mocks/biasf/bias_bernhard.py ../positions_for_each_mass_bin_snap100/$i > ../bias_snap100/bias_$i
+  python3 ../../desiunit_hod_mocks/biasf/bias_bernhard.py ../positions_for_each_mass_bin_snap100/$i > ../bias_snap100/bias_particles_short_$i
 
 done
 

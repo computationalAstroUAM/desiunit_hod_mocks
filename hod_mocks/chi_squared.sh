@@ -19,45 +19,45 @@
 #1.2.  with number density 10*n_eBOSS
 
 #fsat = 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.2 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.16 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.12 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.08 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.04 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.0 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.04 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.08 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.12 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.16 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.2 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.2 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.16 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.12 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.08 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 -0.04 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.0 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.04 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.08 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.12 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.16 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.138 0.26041 0 1 0.2 1 0 0
 
 
 #fsat = 0.05
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.2 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.16 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.12 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.08 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.04 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.0 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.04 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.08 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.12 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.16 1 0 0
-./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.2 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.2 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.16 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.12 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.08 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 -0.04 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.0 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.04 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.08 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.12 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.16 1 0 0
+#./HOD_NFW_V14_more_BVG_product 12.057 0.20588 0.03232 1 0.2 1 0 0
 
 
 #fsat = 0.10
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.2 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.16 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.12 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.08 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.04 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.0 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.04 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.08 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.12 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.16 1 0 0
-./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.2 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.2 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.16 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.12 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.08 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 -0.04 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.0 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.04 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.08 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.12 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.16 1 0 0
+#./HOD_NFW_V14_more_BVG_product 11.970 0.16028 0.050109 1 0.2 1 0 0
 
 
 #fsat = 0.15
@@ -189,6 +189,24 @@
 #./HOD_NFW_V14_more_BVG_product 10.841 0.006236 0.014182 1 0.12 1 0 0
 #./HOD_NFW_V14_more_BVG_product 10.841 0.006236 0.014182 1 0.16 1 0 0
 #./HOD_NFW_V14_more_BVG_product 10.841 0.006236 0.014182 1 0.2 1 0 0
+
+
+
+#Considering 1% of particles in the caluclation of halo bias:
+
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 -0.2 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 -0.16 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 -0.12 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 -0.08 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 -0.04 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 0.0 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 0.04 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 0.08 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 0.12 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 0.16 1 0 0
+./HOD_NFW_V14_more_BVG_product_particles 11.114 0.010908 0.028713 1 0.2 1 0 0
+
+
 
 
 

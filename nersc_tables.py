@@ -24,7 +24,7 @@ def H(z):
 
 #Galaxy mocks generated 
 #bias comprobation of mocks 15/11/2021
-data = np.loadtxt('../DESI_outputs/output_V1/mocks_chisquared/galaxies_1000Mpc_V1.4more_NFW_%s_vfact1.00_beta%.3f_K1.00_vt0pm0_BVG_product.dat' % (muAcAs,beta))
+data = np.loadtxt('../DESI_outputs/output_V1/mocks_chisquared/galaxies_1000Mpc_V1.4more_NFW_%s_vfact1.00_beta%.3f_K1.00_vt0pm0_BVG_product_particles.dat' % (muAcAs,beta))
 
 X = data[:,0]
 Y = data[:,1]
@@ -38,7 +38,7 @@ for i in range(0,len(Z_RSD)):
     if Z_RSD[i] > Lbox:
         Z_RSD[i] = Z_RSD[i]-Lbox
 
-out = np.array([X,Y,Z,Z_RSD]).T
+out = np.array([X,Y,Z]).T
 np.savetxt('../DESI_outputs/NERSC_tables/october2021/Mock_%s_beta%.3f.txt' % (muAcAs,beta),out)
 
 
