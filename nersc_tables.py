@@ -13,33 +13,47 @@ H_0 = 100 #Mpc/h
 #./HOD_NFW_V14_more_BVG 10.500 0.00636 0.007098 1     0  0.25  0   0      #Mock 16
 #./HOD_NFW_V14_more_BVG 11.069 0.01213 0.021702 1     0  0.25  0   0      #Mock 11 reference
 
+
+#Comprobaciones de porque el galaxy bias sale mal
+# fsat = 0.6, n = 2.4e-3, b = 1.327:  mu11.090_Ac0.0102_As0.02682   
+# fsat = 0.15, n = 2.4e-3, b = 1.327: mu12.017_Ac0.1680_As0.08544 
+# fsat = 0.6, n = 2.4e-4, b = 1.327:  mu11.090_Ac0.0010_As0.00268   
+# fsat = 0.15, n = 2.4e-4, b = 1.327: mu12.017_Ac0.0168_As0.00854 
+
+#fsat = 0.6, n = 2.4e-3, b = 1.327, mu10.803_Ac0.0058_As0.01280
+
+
 Lbox = float(sys.argv[1]) #Mpc/h       #If UNITSIM boxes: 1000
 Om  = float(sys.argv[2])               #If UNITSIM cosmology: Om = 0.3089
 z1  = float(sys.argv[3])               #If ELG eBOSS: z = 0.865
-muAcAs = sys.argv[4]            #Example: mu10.841_Ac0.0062_As0.01418
-beta = float(sys.argv[5])              #We consider -2 NI  ; -1-0 B ; 0 P ; 0-... NB
+#muAcAs = sys.argv[4]            #Example: mu10.841_Ac0.0062_As0.01418
+#beta = float(sys.argv[5])              #We consider -2 NI  ; -1-0 B ; 0 P ; 0-... NB
 
 def H(z):
     return H_0*np.sqrt(Om*(1+z)**3+1-Om)
 
 #Galaxy mocks generated 
 #bias comprobation of mocks 15/11/2021
-data = np.loadtxt('../DESI_outputs/output_V1/mocks_chisquared/galaxies_1000Mpc_V1.4more_NFW_%s_vfact1.00_beta%.3f_K1.00_vt0pm0_BVG_product_particles.dat' % (muAcAs,beta))
+fsat,mus,Acs,Ass = np.loadtxt('../DESI_outputs/HODs/HOD_gaussPL_PL_corr_7x2.4e-4_b1.363_particles_short_extended_21particles.params',usecols = (0,1,2,3),unpack = True)
 
-X = data[:,0]
-Y = data[:,1]
-Z = data[:,2]
-VZ = data[:,5]
-Z_RSD = Z + (1+z1)*VZ/H(z1)
+betas = np.linspace(-0.2,0.2,11)
+mus = np.array([mus[4]])
+Acs = np.array([Acs[4]])
+Ass = np.array([Ass[4]])
+betas = np.array([betas[5]])
 
-for i in range(0,len(Z_RSD)):
-    if Z_RSD[i] < 0:
-        Z_RSD[i] = Z_RSD[i]+Lbox
-    if Z_RSD[i] > Lbox:
-        Z_RSD[i] = Z_RSD[i]-Lbox
+for k, (mu,Ac,As) in enumerate(zip(mus,Acs,Ass)):
+    for j,beta in enumerate(betas): 
+        X,Y,Z,VZ = np.loadtxt('../DESI_outputs/output_V1/21particles_fsat_beta/galaxies_1000Mpc_V1.4more_NFW_mu%.3f_Ac%.4f_As%.5f_vfact1.00_beta%.3f_K1.00_vt0pm0_BVG_product_nosubhalos_21particles.dat' % (mu,Ac,As,beta),usecols = (0,1,2,5),unpack = True)
+        Z_RSD = Z + (1+z1)*VZ/H(z1)
+        for i in range(0,len(Z_RSD)):
+            if Z_RSD[i] < 0:
+                Z_RSD[i] = Z_RSD[i]+Lbox
+            if Z_RSD[i] > Lbox:
+                Z_RSD[i] = Z_RSD[i]-Lbox
 
-out = np.array([X,Y,Z]).T
-np.savetxt('../DESI_outputs/NERSC_tables/october2021/Mock_%s_beta%.3f.txt' % (muAcAs,beta),out)
+        out = np.array([X,Y,Z]).T
+        np.savetxt('../DESI_outputs/NERSC_tables/october2021/fsat_beta/Mock_mu%s_beta%.3f_nosubhalos_21particles_Real.txt' % (mu,beta),out)
 
 
 #Figura 7 Avila 2020

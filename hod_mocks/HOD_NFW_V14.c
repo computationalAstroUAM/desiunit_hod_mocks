@@ -20,16 +20,16 @@
 
 #ifdef MORE
 	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
-        #define outbase ("../../DESI_outputs/output_V1/pruebas/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_particles.dat") //BVG
+        #define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean.dat") //BVG
 #else
-  	#define outbase ("../../DESI_outputs/output_V1/pruebas/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_particles.dat") //BVG
+  	#define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean.dat") //BVG
 #endif
 //#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
-#define inbase ("../../DESI_outputs/out_100p_X_Y_Z_VX_VY_VZ_logM.txt")  //BVG
+#define inbase ("../../DESI_outputs/UNIT_001/halos_UNIT_001/out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt")  //out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt out_100p_X_Y_Z_VX_VY_VZ_logM.txt  //BVG
 //#define partfile ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/vol500Mpc/OuterRim_STEP266_z0.865/OuterRim_STEP266_particles_500Mpc.txt")
 
 
-float zsnap = 0.865;
+float zsnap = 0.8594;
 //float zsnap = 0.9873; //BVG
 
 double LBOX = 1000.;
@@ -174,6 +174,12 @@ int main(int argc, char **argv){
 	for (i=0;i<Nhalos;i++){	
                 sscanf(line,"%lf %lf %lf %lf %lf %lf %lf %lu", &x,&y,&z, &vx,&vy,&vz, &logM, &id);
 		M = pow(10.,logM);
+		//longitude = sizeof(M);
+
+		//for ( int i = 0; i < longitude; i++ ) { 
+		//	if ( set[i] <= 5 && size_subset < 5 ) 
+		//		subset[size_subset++] = set[i]; 
+		//}
 		Nsat = HOD_powerlaw(M, M0, M1, alpha, As);
 		#ifdef HOD1
 		Ncent= HOD_erf(logM,mu,sig,Ac);
@@ -309,7 +315,10 @@ int next_integer(float x){
 
 /*overflow happens in gamma(x) when x>171.7*/
 
-double product(double a,double b){ /*LONG DOUBLE BAD RESULTS*/
+
+
+
+double product(double a,double b){ //LONG DOUBLE BAD RESULTS
         int c = (round)(a-b);
         double s = 1.0;
         int j;
@@ -344,27 +353,27 @@ int neg_binomial(double x,double beta){   /*the definition of r can be extended 
         do{
                 N++;
 		P+= product(N+r-1,r)/( tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ;
-/*                P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ; */
+//                P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ; 
         } while(P<rand01);
 
         return N;
 }
 
-
-int n(double y, double z){  //BVG
-        int outn = 0;
-	if (1/z >= trunc(y+1.0))
+float epsilon = pow(10,-12);
+double n(double y, double z){  //BVG   antes era int,puede que fuera este todo el problema
+        double outn = 0; //BVG antes era int, puede que fuera este todo el problema
+	if (1/z >= y+epsilon) //trunc(y + 1.0) y+epsilon
                 outn = 1/z;
         else
-                outn = trunc(y+1.0);
+                outn = y+epsilon; //outn = trunc(y+1.0) outn = y+epsilon
         return outn;
 }
 
 double p(double y, double z){   //BVG
-        if (1/z >= trunc(y+1.0))
+        if (1/z >= y+epsilon) //trunc(y * 1.0) y+epsilon
                 return y*z;
         else
-                return y/(trunc(y+1.0));
+                return y/(y+epsilon); //return y/(trunc(y+1.0) return y/(y+epsilon)
 
 }
 
@@ -383,7 +392,7 @@ int binomial(double x, double beta){                                //BVG
         return N;
 }
 
-
+//n es e
 
 int HOD_powerlaw(double M, double M0, double M1, double alpha, double As){
 	if (M1<=0.0)

@@ -13,11 +13,12 @@ echo Calculates the power spectrum of 76 files. Each one contains X, Y, Z inform
 #done
 
 
-cd ../../DESI_outputs/positions_for_each_mass_bin_snap100/
+cd ../../DESI_outputs/positions_for_each_mass_bin_snap100_21particles/
 for i in *.txt
 do
-  echo "Looping ... i is set to $i"
-  python3 ../../desiunit_hod_mocks/biasf/bias_bernhard.py ../positions_for_each_mass_bin_snap100/$i > ../bias_snap100/bias_particles_short_$i
+  echo "Looping ... Pk_$i is set to bias_$i"
+  python3 ../../desiunit_hod_mocks/biasf/bias_bernhard.py ../Pk_halos_21particles/Pk_$i > ../bias_snap100_21particles/bias_$i
+
 
 done
 

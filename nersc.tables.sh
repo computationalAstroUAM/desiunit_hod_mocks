@@ -7,22 +7,12 @@
 #beta = float(sys.argv[5])              #We consider -2 NI  ; -1-0 B ; 0 P ; 0-... NB
 
 
-
-
-python3 nersc_tables.py 1000 0.3089 0.865 mu11.114_Ac0.0109_As0.02871 -0.2
-
-python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 -0.2
-python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 -0.16
-python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 -0.12
-python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 -0.08
-python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 -0.04
-python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 0
-#python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 0.04
-#python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 0.08
-#python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 0.12
-#python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 0.16
-#python3 nersc_tables.py 1000 0.3089 0.865 mu10.841_Ac0.0062_As0.01418 0.2
-
+PATH1='../DESI_outputs/output_V1/21particles_fsat_beta'
+echo "Leer archivos..."
+find "$PATH1" -mindepth 0 -type f -name "galaxies_1000Mpc_V1.4more_NFW_*_vfact1.00_beta*_K1.00_vt0pm0_BVG_product_nosubhalos_21particles.dat" $FIRST $SECOND | while read -r file
+do
+    python3 nersc_tables.py 1000 0.3089 0.865 $FIRST $SECOND
+done
 
 
 
