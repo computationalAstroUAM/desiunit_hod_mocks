@@ -20,9 +20,9 @@
 
 #ifdef MORE
 	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
-        #define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean.dat") //BVG
+        #define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean_if.dat") //BVG
 #else
-  	#define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean.dat") //BVG
+  	#define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean_if.dat") //BVG
 #endif
 //#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
 #define inbase ("../../DESI_outputs/UNIT_001/halos_UNIT_001/out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt")  //out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt out_100p_X_Y_Z_VX_VY_VZ_logM.txt  //BVG
@@ -359,7 +359,7 @@ int neg_binomial(double x,double beta){   /*the definition of r can be extended 
         return N;
 }
 
-float epsilon = pow(10,-12);
+float epsilon = pow(10,-2);
 double n(double y, double z){  //BVG   antes era int,puede que fuera este todo el problema
         double outn = 0; //BVG antes era int, puede que fuera este todo el problema
 	if (1/z >= y+epsilon) //trunc(y + 1.0) y+epsilon
@@ -383,10 +383,12 @@ int binomial(double x, double beta){                                //BVG
         double P=0;
         int N=-1;
         double rand01 =  ((float) rand()/(RAND_MAX+1.));
-        do{
+	do{
                 N++;
-                P+= tgamma(n(x,a)+1)/( tgamma(n(x,a)+1-N)*tgamma(N+1) ) * pow(p(x,a),N)*pow(1-p(x,a),n(x,a)-N) ;
-
+		if (N < n(x,a))
+                	P+= tgamma(n(x,a)+1)/( tgamma(n(x,a)+1-N)*tgamma(N+1) ) * pow(p(x,a),N)*pow(1-p(x,a),n(x,a)-N) ;
+		else
+			P = 1;
         } while(P<rand01);
 
         return N;
