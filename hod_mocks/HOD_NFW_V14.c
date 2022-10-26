@@ -20,21 +20,21 @@
 
 #ifdef MORE
 	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
-        #define outbase ("../../DESI_outputs/output_V1/n_25e-4/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_2beta%.3f_mock_newNB.dat") //BVG
+        #define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean_if.dat") //BVG
 #else
-  	#define outbase ("../../DESI_outputs/output_V1/n_25e-4/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_2beta%.3f_mock_newNB.dat") //BVG
+  	#define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean_if.dat") //BVG
 #endif
 //#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
-#define inbase ("../../DESI_outputs/out_97p_X_Y_Z_VX_VY_VZ_logM.txt")  //BVG
+#define inbase ("../../DESI_outputs/UNIT_001/halos_UNIT_001/out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt")  //out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt out_100p_X_Y_Z_VX_VY_VZ_logM.txt  //BVG
 //#define partfile ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/vol500Mpc/OuterRim_STEP266_z0.865/OuterRim_STEP266_particles_500Mpc.txt")
 
 
-//float zsnap = 0.865;
-float zsnap = 0.9873;
+float zsnap = 0.8594;
+//float zsnap = 0.9873; //BVG
 
 double LBOX = 1000.;
 //double OMEGA_M = 0.272;
-double OMEGA_M = 0.3089;
+double OMEGA_M = 0.3089; //UNITSIM
 
 //double Mmin = 11.0;
 //double M1 = 12.0;
@@ -74,7 +74,7 @@ double *mask;
 //double watson(double );
 
 double BETA;
-double BETA2;          //BVG
+          //BVG
 
 int main(int argc, char **argv){
   	fprintf(stderr,"Run call:\n\t");
@@ -84,8 +84,8 @@ int main(int argc, char **argv){
    	}
 	fprintf(stderr,"\n");
 	fprintf(stderr,"Number of params: %d \n",argc);
-	if (argc!=10){      //BVG
-		fprintf(stderr,"usage: %s mu Ac As vfact beta K  vt sigma(vt) beta2\n",argv[0]); //BVG
+	if (argc!=9){      //BVG
+		fprintf(stderr,"usage: %s mu Ac As vfact beta K  vt sigma(vt) \n",argv[0]); //BVG
 		return -1;
 	}
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv){
 	double K = atof(argv[6]);
 	double vt = atof(argv[7]);  //=0  =500
 	double vtdisp = atof(argv[8]);  //=0  =200
-	BETA2 = atof(argv[9]);    //BVG   Binomial, only if BETA = 0, BETA2 > 0. If noy using binomial, then set BETA2 = 0
+	//BVG   Binomial, only if BETA = 0, BETA2 > 0. If noy using binomial, then set BETA2 = 0
 	double ux,uy,uz,vtrand,Dr;
 
 	//int imock = atoi(argv[9]);  
@@ -143,7 +143,7 @@ int main(int argc, char **argv){
 	#endif
 	//sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp,imock,jmock,kmock);
 	//sprintf(input,inbase,imock,jmock,kmock);
-	sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp,BETA2);    //BVG
+	sprintf(output,outbase,version,mu,Ac,As,vfact,BETA,K,vt,vtdisp);    //BVG
 	sprintf(input,inbase);
 
 	seed = 42;
@@ -174,6 +174,12 @@ int main(int argc, char **argv){
 	for (i=0;i<Nhalos;i++){	
                 sscanf(line,"%lf %lf %lf %lf %lf %lf %lf %lu", &x,&y,&z, &vx,&vy,&vz, &logM, &id);
 		M = pow(10.,logM);
+		//longitude = sizeof(M);
+
+		//for ( int i = 0; i < longitude; i++ ) { 
+		//	if ( set[i] <= 5 && size_subset < 5 ) 
+		//		subset[size_subset++] = set[i]; 
+		//}
 		Nsat = HOD_powerlaw(M, M0, M1, alpha, As);
 		#ifdef HOD1
 		Ncent= HOD_erf(logM,mu,sig,Ac);
@@ -220,9 +226,9 @@ int main(int argc, char **argv){
 				if (zgal<0)
 					zgal+=LBOX;
 				#ifdef MORE
-				fprintf(f_out,"%f %f %f %f %f %f %e %d %f %f %f %f %f %f %lu\n",xgal,ygal,zgal,vx+Dvx,vy+Dvy,vz+Dvz,M,-1, Dvx,Dvy,Dvz,Dx,Dy,Dz,id);
+				fprintf(f_out,"%f %f %f %f %f %f %e %d %f %f %f %f %f %f %lu\n",xgal,ygal,zgal,vx+Dvx,vy+Dvy,vz+Dvz,M,Nsat, Dvx,Dvy,Dvz,Dx,Dy,Dz,id); //BVG
 				#else
-				fprintf(f_out,"%f %f %f %f %f %f %e %d\n",xgal,ygal,zgal,vx+Dvx,vy+Dvy,vz+Dvz,M, -1);
+				fprintf(f_out,"%f %f %f %f %f %f %e %d\n",xgal,ygal,zgal,vx+Dvx,vy+Dvy,vz+Dvz,M, Nsat);  //BVG
 				#endif
 		}
           	fgets(line,1000,f_in);
@@ -306,40 +312,89 @@ int next_integer(float x){
 
 /*BVG code for negative binomial and binomial. x is the mean of the distribution, and beta the parameter that increases the variance of the distribution*/
 
-int neg_binomial(double x, double beta){
+
+/*overflow happens in gamma(x) when x>171.7*/
+
+
+
+
+double product(double a,double b){ //LONG DOUBLE BAD RESULTS
+        int c = (round)(a-b);
+        double s = 1.0;
+        int j;
+        if (c%1 == 0)
+                for(j=0;j<c+1;j++){
+                        s *= (j+b);
+                }
+	else
+                printf("Error: no integer number c");
+	return s;
+
+
+}
+
+/*
+double P_NB3(int C,double D, double E){
+        double a;
+        a = product(C+D-1,D)/( tgamma(C+1) ) * pow(E,D)*pow(1-E,C) ;
+        return a;
+
+}
+*/
+
+int neg_binomial(double x,double beta){   /*the definition of r can be extended to reals*/
 
         double r = x/beta;
 	double p = r/(r+x);
-
+/*	double xmax = 171.7;*/
         double P=0;
         int N=-1;
         double rand01 =  ((float) rand()/(RAND_MAX+1.));
         do{
                 N++;
-                P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ;
-
+		P+= product(N+r-1,r)/( tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ;
+//                P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ; 
         } while(P<rand01);
 
         return N;
 }
 
-int binomial(double x, double beta2){                                //BVG
+float epsilon = pow(10,-2);
+double n(double y, double z){  //BVG   antes era int,puede que fuera este todo el problema
+        double outn = 0; //BVG antes era int, puede que fuera este todo el problema
+	if (1/z >= y+epsilon) //trunc(y + 1.0) y+epsilon
+                outn = 1/z;
+        else
+                outn = y+epsilon; //outn = trunc(y+1.0) outn = y+epsilon
+        return outn;
+}
 
-        double s = x/beta2;
+double p(double y, double z){   //BVG
+        if (1/z >= y+epsilon) //trunc(y * 1.0) y+epsilon
+                return y*z;
+        else
+                return y/(y+epsilon); //return y/(trunc(y+1.0) return y/(y+epsilon)
 
+}
+
+int binomial(double x, double beta){                                //BVG
+
+        double a = -beta;
         double P=0;
         int N=-1;
         double rand01 =  ((float) rand()/(RAND_MAX+1.));
-        do{
+	do{
                 N++;
-                P+= tgamma(s+1)/( tgamma(s+1-N)*tgamma(N+1) ) * pow(beta2,N)*pow(1-beta2,s-N) ;
-
+		if (N < n(x,a))
+                	P+= tgamma(n(x,a)+1)/( tgamma(n(x,a)+1-N)*tgamma(N+1) ) * pow(p(x,a),N)*pow(1-p(x,a),n(x,a)-N) ;
+		else
+			P = 1;
         } while(P<rand01);
 
         return N;
 }
 
-
+//n es e
 
 int HOD_powerlaw(double M, double M0, double M1, double alpha, double As){
 	if (M1<=0.0)
@@ -350,10 +405,9 @@ int HOD_powerlaw(double M, double M0, double M1, double alpha, double As){
 	if (BETA<-1.0)
 		return next_integer((As*pow(xsat, alpha)));
 	if (BETA==0.)                                                 //BVG
-		if (BETA2 ==0.)                                       //BVG
-		        return poisson(As*pow(xsat, alpha));          //BVG
-	        else                                                  //BVG
-			return binomial(As*pow(xsat, alpha),BETA2);   //BVG
+		return poisson(As*pow(xsat, alpha));                  //BVG
+	if (BETA<0. && BETA>=-1.0)                                     //BVG
+	        return binomial(As*pow(xsat, alpha),BETA);            //BVG
 	if (BETA>0.)                                                  //BVG
 		return neg_binomial(As*pow(xsat, alpha),BETA);        //BVG
 }
