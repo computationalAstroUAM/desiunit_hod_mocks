@@ -1,0 +1,20 @@
+Fitting DESI fuji z = 0.8-1.1 data with UNIT simulations
+
+
+
+Coarse grid: 
+
+beta = 0, 0.1, 0.2, 0.3
+K = 0.4, 0.6, 0.8, 1
+linear bias = 1.18, 1.21, 1.24, 1.27, 1.3, 1.33
+fsat = 0.05, 0.1, ..., 0.75
+1440 mocks in total
+
+Fine grid:
+
+beta = 0.1, 0.12, ..., 0.3
+K = 0.5, 0.55, ..., 0.8
+bias = 1.19
+fsat = 0.06, 0.08, ..., 0.26
+847 mocks in total
+
