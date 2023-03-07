@@ -13,7 +13,7 @@ dm = edges[1:]-edges[:-1]
 mhist = edges[1:]-0.5*dm
 print(edges)
 print(mhist)
-M,halos = np.loadtxt('../../DESI_outputs/UNIT_001/halos_UNIT_001/out_100p_X_Y_Z_VX_VY_VZ_M.txt',usecols = (6,7),unpack = True)   #InvPhase catalog -> we can aslo calculate for the other catalog 
+M,halos = np.loadtxt('../../DESI_outputs/UNIT_001/halos_UNIT_001/outp_100_4096_x_y_z_vx_vy_vz_m_id_no_subhalos_logM_mayor_10.418.txt',usecols = (6,7),unpack = True)   #InvPhase catalog -> we can aslo calculate for the other catalog 
 sel0 = np.where((halos == -1))  #nos quedamos solo con los halos y no subhalos
 M = M[sel0]
 
@@ -44,7 +44,7 @@ hmflog = np.zeros(len(mhist),dtype=float)
 deltalogM = np.zeros(len(mhist),dtype=float)
 
 for Mi in mhist:
-    sel=np.where((edges[i] < np.log10(M)) & (np.log10(M) < edges[i+1]))
+    sel=np.where((edges[i] < M) & (M < edges[i+1]))
     deltaM=10**(edges[i+1])-10**(edges[i])
     deltalogM = edges[i+1]-edges[i]
     hmf[i] = len(M[sel])/(deltaM*Vbox)
@@ -56,10 +56,10 @@ hmf_acc = np.zeros(len(mhist),dtype=float)
 sel3 = np.zeros(len(mhist),dtype=float)
 
 for k in range(0,len(mhist)):
-    sel3=np.where((mhist[k] < np.log10(M)))
+    sel3=np.where((mhist[k] < M))
     hmf_acc[k]=len(M[sel3])/Vbox
     k+=1
 
 out=np.array([mhist,hmf,hmf_acc,hmflog]).T
-np.savetxt('../../DESI_outputs/output/HMF_and_accumulated_and_log_mainhalos_snap100_extended_21_particles.txt',out)
+np.savetxt('../../DESI_outputs/output/HMF_PNG_and_accumulated_and_log_mainhalos_snap100_extended_21_particles.txt',out)
 
