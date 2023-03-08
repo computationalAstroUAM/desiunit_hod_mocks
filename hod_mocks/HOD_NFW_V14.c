@@ -20,9 +20,9 @@
 
 #ifdef MORE
 	//#define outbase ("/mnt/lustre/savila/HOD_NFW/output_V1/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_mock%d%d%d.dat")
-        #define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean_if.dat") //BVG
+        #define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%smore_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_trunc_binomialextended.dat") //BVG
 #else
-  	#define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_n_equal_mean_if.dat") //BVG
+  	#define outbase ("../../DESI_outputs/output_V1/21particles/galaxies_1000Mpc_V%s_NFW_mu%.3f_Ac%.4f_As%.5f_vfact%.2f_beta%.3f_K%.2f_vt%.0fpm%.0f_BVG_product_nosubhalos_trunc_binomialextended.dat") //BVG
 #endif
 //#define inbase ("/mnt/lustre/eboss/OuterRim/OuterRim_sim/ascii/OuterRim_STEP266_z0.865/subvols27/OuterRim_STEP266_fofproperties_%d%d%d.txt")
 #define inbase ("../../DESI_outputs/UNIT_001/halos_UNIT_001/out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt")  //out_100p_X_Y_Z_VX_VY_VZ_no_subhalos_logM_mayor_10.418.txt out_100p_X_Y_Z_VX_VY_VZ_logM.txt  //BVG
@@ -226,7 +226,7 @@ int main(int argc, char **argv){
 				if (zgal<0)
 					zgal+=LBOX;
 				#ifdef MORE
-				fprintf(f_out,"%f %f %f %f %f %f %e %d %f %f %f %f %f %f %lu\n",xgal,ygal,zgal,vx+Dvx,vy+Dvy,vz+Dvz,M,Nsat, Dvx,Dvy,Dvz,Dx,Dy,Dz,id); //BVG
+				fprintf(f_out,"%.5f %.5f %.5f %.5f %.5f %.5f %e %d %.4f %.4f %.4f %.4f %.4f %.4f %lu\n",xgal,ygal,zgal,vx+Dvx,vy+Dvy,vz+Dvz,M,Nsat, Dvx,Dvy,Dvz,Dx,Dy,Dz,id); //BVG
 				#else
 				fprintf(f_out,"%f %f %f %f %f %f %e %d\n",xgal,ygal,zgal,vx+Dvx,vy+Dvy,vz+Dvz,M, Nsat);  //BVG
 				#endif
@@ -311,8 +311,6 @@ int next_integer(float x){
 }*/
 
 /*BVG code for negative binomial and binomial. x is the mean of the distribution, and beta the parameter that increases the variance of the distribution*/
-
-
 /*overflow happens in gamma(x) when x>171.7*/
 
 
@@ -333,50 +331,96 @@ double product(double a,double b){ //LONG DOUBLE BAD RESULTS
 
 }
 
-/*
-double P_NB3(int C,double D, double E){
-        double a;
-        a = product(C+D-1,D)/( tgamma(C+1) ) * pow(E,D)*pow(1-E,C) ;
-        return a;
 
-}
-*/
 
-int neg_binomial(double x,double beta){   /*the definition of r can be extended to reals*/
+int neg_binomial(double x,double beta){   /* BVG: the definition of r can be extended to reals*/
 
-        double r = x/beta;
+        double r = 1/beta;  //BVG: Before we had r = x/beta. This new definition is to adapt variance formula to have the same expression as the variance formula of the binomial distribution
 	double p = r/(r+x);
-/*	double xmax = 171.7;*/
         double P=0;
         int N=-1;
         double rand01 =  ((float) rand()/(RAND_MAX+1.));
         do{
                 N++;
 		P+= product(N+r-1,r)/( tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ;
-//                P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ; 
+//                P+= tgamma(N+r)/( tgamma(r)*tgamma(N+1) ) * pow(p,r)*pow(1-p,N) ; BVG: If we ise tgamma(N+r)/tgamma(r) , for high values of N+r, r  we will have overflows, then we use product function in order to avoid overflows
         } while(P<rand01);
 
         return N;
 }
 
-float epsilon = pow(10,-2);
-double n(double y, double z){  //BVG   antes era int,puede que fuera este todo el problema
-        double outn = 0; //BVG antes era int, puede que fuera este todo el problema
-	if (1/z >= y+epsilon) //trunc(y + 1.0) y+epsilon
-                outn = 1/z;
+// BVG: g0,betas,gi,gn and f are functions developed to extend the binomial distribution, in order to have access to a continuous range of beta values 
+double g0(double mean, int b){
+        double result = 0;
+        int i;
+        if (b < 0)
+                result = 0;
         else
-                outn = y+epsilon; //outn = trunc(y+1.0) outn = y+epsilon
+                for (i=0;i<b+1;i++){
+                        result += pow(-mean,i)/factorial(i);
+                }
+        return result;
+}
+
+
+double betas(int i,double beta){
+
+        double result2 = 1;
+        int j;
+        for (j=1;j<=i;j++){
+                result2 *= (j*beta+1);
+        }
+}
+
+
+
+double gi(int i,int Nsat,double mean,double beta){
+        if (i+1-Nsat < 0)
+                return 0;
+        else
+                return (pow(-1,i+1-Nsat)/factorial(i+1-Nsat)) * pow(mean,i+1-Nsat) * betas(i,beta);
+}
+
+
+double gn(int i,int Nsat,double mean,double beta){
+        double res = 0;
+        int j;
+        for (j=1;j<=i-1;j++){
+                res += gi(j,Nsat,mean,beta);
+        }
+        return res;
+}
+
+double f(int Nsat,double beta,double mean){
+	int q = ceil(-1.0/beta);
+	if (q>(mean+1) & (Nsat < q+0.01) & beta < -0.3333334)
+                return pow(q,Nsat)*factorial(q-Nsat)/factorial(q) * (g0(mean,1-Nsat)+gn(q,Nsat,mean,beta))/( pow(1-mean/q,q-Nsat) );
+        else
+                return 1;
+}
+
+
+float epsilon = pow(10,-2);
+double n(double y, double z){  //BVG: before it was defined as an integer
+        int q = ceil(1.0/z);
+	double outn = 0; //BVG before it was defined as an integer
+	if (q >= trunc(y + 1.0)) //BVG: We used those two possibilities 1) trunc(y + 1.0) 2) y+epsilon
+                outn = q;
+        else
+                outn = trunc(y+1.0); //BVG: We used those two posibilities 1) outn = trunc(y+1.0) 2) outn = y+epsilon  , we have to consider outn different from q in order to avoid negative variances
         return outn;
 }
 
 double p(double y, double z){   //BVG
-        if (1/z >= y+epsilon) //trunc(y * 1.0) y+epsilon
-                return y*z;
+	int q = ceil(1.0/z);
+        if (q >= trunc(y + 1.0)) //BVG: trunc(y * 1.0) y+epsilon
+                return y/q;
         else
-                return y/(y+epsilon); //return y/(trunc(y+1.0) return y/(y+epsilon)
+                return y/(trunc(y+1.0)); //BVG: return y/(trunc(y+1.0) return y/(y+epsilon), also here p is different from y/q in order to avoid negative variances
 
 }
 
+/*
 int binomial(double x, double beta){                                //BVG
 
         double a = -beta;
@@ -385,14 +429,27 @@ int binomial(double x, double beta){                                //BVG
         double rand01 =  ((float) rand()/(RAND_MAX+1.));
 	do{
                 N++;
-		if (N < n(x,a))
-                	P+= tgamma(n(x,a)+1)/( tgamma(n(x,a)+1-N)*tgamma(N+1) ) * pow(p(x,a),N)*pow(1-p(x,a),n(x,a)-N) ;
-		else
-			P = 1;
+                P+= tgamma(n(x,a)+1)/( tgamma(n(x,a)+1-N)*tgamma(N+1) ) * pow(p(x,a),N)*pow(1-p(x,a),n(x,a)-N) ;
         } while(P<rand01);
 
         return N;
 }
+*/
+
+int binomial(float x, float beta){                                //BVG
+
+        float a = -beta;
+	float P=0;
+        int N=-1;
+	float rand01 =  ((float) rand()/(RAND_MAX+1.));
+	do{
+                N++;
+                P+= f(N,beta,x)*tgamma(n(x,a)+1)/( tgamma(n(x,a)+1-N)*tgamma(N+1) ) * pow(p(x,a),N)*pow(1-p(x,a),n(x,a)-N);
+        } while(P<rand01);
+        return N;
+}
+
+
 
 //n es e
 
@@ -404,9 +461,9 @@ int HOD_powerlaw(double M, double M0, double M1, double alpha, double As){
 	double xsat = (M-M0)/M1;
 	if (BETA<-1.0)
 		return next_integer((As*pow(xsat, alpha)));
-	if (BETA==0.)                                                 //BVG
+	if (BETA<=0. && BETA >= -1.0/171.)                             //BVG
 		return poisson(As*pow(xsat, alpha));                  //BVG
-	if (BETA<0. && BETA>=-1.0)                                     //BVG
+	if (BETA<-1.0/171 && BETA>=-1.0)                               //BVG we don't arrive to 0 since we have overflows with the gamma functions in the binomial (extended). Since beta is very close to zero, we conisder those cases as Poissonian
 	        return binomial(As*pow(xsat, alpha),BETA);            //BVG
 	if (BETA>0.)                                                  //BVG
 		return neg_binomial(As*pow(xsat, alpha),BETA);        //BVG

@@ -5,9 +5,9 @@ bias = np.zeros(82)
 bdown = np.zeros(82)
 bup = np.zeros(82)
 for i in range(0,82):
-    bias[i] = np.loadtxt('../../DESI_outputs/bias_snap100_21particles/bias_%d.txt' % i)[0]
-    bdown[i] = np.loadtxt('../../DESI_outputs/bias_snap100_21particles/bias_%d.txt' % i)[1]
-    bup[i] = np.loadtxt('../../DESI_outputs/bias_snap100_21particles/bias_%d.txt' % i)[2]
+    bias[i] = np.loadtxt('../../DESI_outputs/bias_PNG_snap100_21particles/bias_%d.txt' % i)[0]
+    bdown[i] = np.loadtxt('../../DESI_outputs/bias_PNG_snap100_21particles/bias_%d.txt' % i)[1]
+    bup[i] = np.loadtxt('../../DESI_outputs/bias_PNG_snap100_21particles/bias_%d.txt' % i)[2]
 
 print(bias)
 print(bdown)
@@ -20,6 +20,6 @@ print(len(mhalo))
 print(len(bias))
 out = np.array([mhalo,bias,bdown,bup]).T
 
-np.savetxt('../../DESI_outputs/bias_snap100_21particles/all_bias.txt',out)
+np.savetxt('../../DESI_outputs/bias_PNG_snap100_21particles/all_bias.txt',out)
 
 

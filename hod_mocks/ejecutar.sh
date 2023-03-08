@@ -20,17 +20,6 @@ nohup ./HOD_NFW_V14_more_BVG 10.954 0.008899 0.01954 1 0.3 1 0 0   #NB
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 #LOS BUENOS
 # Para n = 0.0025 y kmax =0.1 and polynomial grade 6
 

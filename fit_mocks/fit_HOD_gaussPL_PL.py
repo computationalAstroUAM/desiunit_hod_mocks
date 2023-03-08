@@ -150,9 +150,10 @@ Mhmin = 10.418
 if fix_fsat:
     fsat_arr = np.array([fsat0])
 else:
-    fsat_arr = np.arange(0.025, 0.6025,0.025)
+    #fsat_arr = np.arange(0.025, 0.6025,0.025)
     # proyecto con guillermo
     #fsat_arr = np.loadtxt('../../../../guillermo/hodmocks/data/fsat.txt')
+    fsat_arr = np.linspace(0,1,21)
 
 if fix_mu:
     mu_arr = np.array([mu0])
@@ -284,8 +285,8 @@ if (times7):
                    out, fmt='%.2f %.6f %e %e')
 else:
     if (corr == 0):
-        np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_6x2.4e-4_b1.3744_particles_short_extended_21particles_spacing0025.params',out,fmt='%.2f %.3f %.6f %.6f')
+        np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_6x2.4e-4_b1.3744_particles_short_extended_21particles1.params',out,fmt='%.2f %.3f %.6f %.6f')
         #np.savetxt('../../DESI_data/HODs/HOD_gaussPL_PL_DESI_ELG_fuji_z0.8-1.1_n8.1e-4_b_targ%.4f_limit_fsat.params' % b_targ,out, fmt='%.2f %.3f %.6f %.6f')  # proyecto DESI ELG fuji
     else:
-        np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_6x2.4e-4_b1.3744_particles_short_extended_21particles_spacing0025.params',out,fmt='%.2f %.3f %.6f %.6f')
+        np.savetxt('../../DESI_outputs/HODs/HOD_gaussPL_PL_corr_6x2.4e-4_b1.3744_particles_short_extended_21particles1.params',out,fmt='%.2f %.3f %.6f %.6f')
         #np.savetxt('../../DESI_data/HODs/HOD_gaussPL_PL_DESI_ELG_fuji_z0.8-1.1_n8.1e-4_b_targ%.4f_limit_fsat.params' % b_targ,out, fmt='%.2f %.3f %.6f %.6f')  # proyecto DESI ELG fuji

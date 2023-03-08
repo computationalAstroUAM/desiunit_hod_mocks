@@ -48,7 +48,7 @@ def f(z):
 k,Pk_th_particles = np.loadtxt('../../DESI_outputs/Pk_particles/Pk_particles.txt',usecols = (0,1),unpack = True) #We used previously dm_particles_0.005_100, dm_particles_0.5_100 dm_particles_0.5_100_InvPhase_tsc.Pk
 
 #if we want to use theory of camb unit:
-k,Pk_th_particles = np.loadtxt('../Pk_theory/Pk_camb_unit.txt',usecols = (0,1),unpack = True)
+k,Pk_th_particles = np.loadtxt('../../desiunit_hod_mocks/Pk_theory/Pk_camb_unit.txt',usecols = (0,1),unpack = True)
 
 
 #2.   PK UNITSIM haloes
