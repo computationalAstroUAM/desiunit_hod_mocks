@@ -1,5 +1,7 @@
 # Constructing eBOSS and DESI mock catalogues from the UNIT simulation
 
+The code is based on [Avila+2020](https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.5486A/abstract). Please cite this paper if you use the code.
+
 This repository contains code relevant for the construction of eBOSS and DESI mock catalogues using the UNIT simulation.
 
 * **hmf**: Contains code to generate the halo mass function from the OuterRim simulation. [to be adapted to UNIT]
